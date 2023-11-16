@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.goshopapp.presentation.screens.home.HomeScreen
 import com.example.goshopapp.presentation.screens.profile.ProfileScreen
+import com.example.goshopapp.presentation.screens.register.RegisterScreen
 import com.example.goshopapp.presentation.screens.scanner.ScannerScreen
 import com.example.goshopapp.presentation.screens.splash.SplashScreen
 
@@ -28,6 +29,9 @@ fun AppNavigation(
         }
         composable(AppScreens.ProfileScreen.route) {
             ProfileScreen()
+        }
+        composable(AppScreens.RegisterScreen.route) {
+            RegisterScreen()
         }
     }
 }

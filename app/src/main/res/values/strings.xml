@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">GoShopApp</string>
+    <string name="title_activity_register_users">RegisterUsers</string>
+    <string name="emailText">Email</string>
+    <string name="passwordText">Contraseña</string>
+    <string name="registerText">Registrar</string>
+    <string name="loginText">Iniciar Sesión</string>
 </resources>
