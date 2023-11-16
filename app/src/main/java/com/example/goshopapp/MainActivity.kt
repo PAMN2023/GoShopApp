@@ -43,7 +43,8 @@ fun MainScreen() {
     val navigationItems = listOf(
         ScannerScreen,
         HomeScreen,
-        ProfileScreen
+        ProfileScreen,
+        RegisterScreen
     )
 
     Scaffold(

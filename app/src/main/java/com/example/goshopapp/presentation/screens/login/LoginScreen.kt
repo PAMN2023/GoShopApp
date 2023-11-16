@@ -1,4 +1,4 @@
-package com.example.goshopapp.presentation.screens.register
+package com.example.goshopapp.presentation.screens.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,7 @@ import com.example.goshopapp.data.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun LoginScreen() {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     var success by remember { mutableStateOf(false) }
@@ -108,8 +108,8 @@ fun RegisterScreen() {
 
 @Preview(showBackground = true)
 @Composable
-fun RegisterScreenPreview() {
-    RegisterScreen()
+fun LoginScreenPreview() {
+    LoginScreen()
 }
 
 private fun authManage(email: String, pass: String, register: Boolean = false): Boolean {
