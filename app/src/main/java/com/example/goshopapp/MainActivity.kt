@@ -52,7 +52,6 @@ fun MainScreen() {
         ScannerScreen,
         HomeScreen,
         ProfileScreen
-
     )
     
     LateralMenu(

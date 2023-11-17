@@ -10,6 +10,7 @@ import com.example.goshopapp.presentation.screens.history.HistoryScreen
 import com.example.goshopapp.presentation.screens.home.HomeScreen
 import com.example.goshopapp.presentation.screens.lists.ListsScreen
 import com.example.goshopapp.presentation.screens.profile.ProfileScreen
+import com.example.goshopapp.presentation.screens.register.RegisterScreen
 import com.example.goshopapp.presentation.screens.scanner.ScannerScreen
 import com.example.goshopapp.presentation.screens.splash.SplashScreen
 
@@ -17,7 +18,8 @@ import com.example.goshopapp.presentation.screens.splash.SplashScreen
 fun AppNavigation(
     navController: NavHostController
 ) {
-    NavHost(navController = navController,
+    NavHost(
+        navController = navController,
         startDestination = AppScreens.SplashScreen.route
     ) {
         composable(AppScreens.SplashScreen.route) {
