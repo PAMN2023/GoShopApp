@@ -9,6 +9,7 @@ import com.example.goshopapp.presentation.screens.favourites.FavouritesScreen
 import com.example.goshopapp.presentation.screens.history.HistoryScreen
 import com.example.goshopapp.presentation.screens.home.HomeScreen
 import com.example.goshopapp.presentation.screens.lists.ListsScreen
+import com.example.goshopapp.presentation.screens.login.LoginScreen
 import com.example.goshopapp.presentation.screens.profile.ProfileScreen
 import com.example.goshopapp.presentation.screens.register.RegisterScreen
 import com.example.goshopapp.presentation.screens.scanner.ScannerScreen
@@ -35,10 +36,10 @@ fun AppNavigation(
             ProfileScreen()
         }
         composable(LateralScreens.LoginScreen.route) {
-            HomeScreen()
+            LoginScreen()
         }
         composable(LateralScreens.RegisterScreen.route) {
-            HomeScreen()
+            RegisterScreen()
         }
         composable(LateralScreens.ListsScreen.route) {
             ListsScreen()
