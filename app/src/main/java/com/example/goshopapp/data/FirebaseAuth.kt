@@ -27,6 +27,14 @@ class FirebaseAuth {
             }
     }
 
+    fun googleRegister() {
+
+    }
+
+    fun googleLogin() {
+
+    }
+
     fun getCurrentUserId(): String? {
         val currentUser = firebaseAuth.currentUser
         return currentUser?.uid
