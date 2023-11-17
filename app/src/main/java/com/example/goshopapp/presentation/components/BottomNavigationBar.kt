@@ -17,6 +17,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.goshopapp.R
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 
 @Composable
 fun BottomNavigationBar(
@@ -32,9 +33,9 @@ fun BottomNavigationBar(
 
         // Show the bottom navigation bar when the current destination is the home screen
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.route == AppScreens.HomeScreen.route) {
-                isBottomNavigationVisible.value = true
-            }
+            isBottomNavigationVisible.value = destination.route != LateralScreens.LoginScreen.route &&
+                    destination.route != LateralScreens.RegisterScreen.route &&
+                    destination.route != AppScreens.SplashScreen.route
         }
     }
 

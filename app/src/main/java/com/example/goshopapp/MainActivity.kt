@@ -8,15 +8,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.goshopapp.presentation.components.BottomNavigationBar
+import com.example.goshopapp.presentation.components.LateralMenu
+import com.example.goshopapp.presentation.components.TopBar
 import com.example.goshopapp.presentation.navigation.AppNavigation
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.AppScreens.*
 import com.example.goshopapp.presentation.ui.theme.GoShopAppTheme
 
@@ -39,14 +46,37 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    
     val navigationItems = listOf(
         ScannerScreen,
         HomeScreen,
         ProfileScreen
-    )
 
+    )
+    
+    LateralMenu(
+        navController = navController,
+        drawerState = drawerState
+    ) {
+        Content(
+            navController = navController,
+            navigationItems =navigationItems,
+            drawerState = drawerState
+        )
+    }
+}
+
+@Composable
+fun Content(
+    navController: NavHostController,
+    navigationItems: List<AppScreens>,
+    drawerState: DrawerState
+){
     Scaffold(
+        topBar = {
+                 TopBar(navController,drawerState)
+        },
         bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }
     ) {padding ->
         Box(modifier = Modifier
