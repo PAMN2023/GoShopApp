@@ -1,5 +1,8 @@
 package com.example.goshopapp.presentation.screens.login
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,10 +49,17 @@ import com.example.goshopapp.data.FirebaseAuth
 import com.example.goshopapp.presentation.components.LateralMenu
 import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.LateralScreens
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.GoogleAuthProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
+    val token = "929980378635-n26stsh0hjhnbdc425173p0t8je0qt7t.apps.googleusercontent.com"
+    val context = LocalContext.current
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     var success by remember { mutableStateOf(false) }
@@ -63,9 +74,20 @@ fun LoginScreen(navController: NavHostController) {
         containerColor = Color(android.graphics.Color.parseColor("#007562")),
         contentColor = Color(android.graphics.Color.parseColor("#007562"))
     )
+    val googleLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            authManagerGoogle(credential){
+                navController.navigate(AppScreens.ProfileScreen.route)
+            }
+        } catch (e: Exception) {
+            Log.d("Error lanzadno google", "El servicio para iniciar con Google no se lanzó")
+        }
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -159,7 +181,11 @@ fun LoginScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-                authManagerGoogle()
+                val options = GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN
+                ).requestIdToken(token).requestEmail().build()
+                val googleClient = GoogleSignIn.getClient(context, options)
+                googleLauncher.launch(googleClient.signInIntent)
             },
             shape = MaterialTheme.shapes.medium,
             border = BorderStroke(2.dp, Color(android.graphics.Color.parseColor("#007562"))),
@@ -177,9 +203,7 @@ fun LoginScreen(navController: NavHostController) {
                     contentDescription = null, // Provide content description if needed
                     modifier = Modifier.size(28.dp) // Set image size as needed
                 )
-
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between the image and text
-
                 Text(
                     text = "INICIO DE SESIÓN\n    CON GOOGLE",
                     fontWeight = FontWeight.Bold,
@@ -226,9 +250,9 @@ private fun authManage(email: String, pass: String, navController: NavHostContro
     return result
 }
 
-private fun authManagerGoogle() {
+private fun authManagerGoogle(credential: AuthCredential, nav:() -> Unit) {
     val authManager = FirebaseAuth()
-    authManager.googleLogin()
+    authManager.googleLogin(credential)
 }
 
 /*@Preview(showBackground = true)

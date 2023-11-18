@@ -1,5 +1,10 @@
 package com.example.goshopapp.presentation.screens.register
 
+import android.app.Activity
+import android.app.Instrumentation.ActivityResult
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -39,11 +45,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.goshopapp.R
 import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.LateralScreens
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.GoogleAuthProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavHostController) {
+    val token = "929980378635-n26stsh0hjhnbdc425173p0t8je0qt7t.apps.googleusercontent.com"
+    val context = LocalContext.current
     val nameState = remember { mutableStateOf("") }
     val surnameState = remember { mutableStateOf("") }
     val emailState = remember { mutableStateOf("") }
@@ -59,9 +73,20 @@ fun RegisterScreen(navController: NavHostController) {
         containerColor = Color(android.graphics.Color.parseColor("#007562")),
         contentColor = Color(android.graphics.Color.parseColor("#007562"))
     )
+    val googleLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            authManagerGoogle(credential){
+                navController.navigate(AppScreens.ProfileScreen.route)
+            }
+        } catch (e: Exception) {
+            Log.d("Error lanzadno google", "El servicio para iniciar con Google no se lanzó")
+        }
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,35 +97,45 @@ fun RegisterScreen(navController: NavHostController) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
 
         TextField(
             value = nameState.value,
             onValueChange = { newValue ->
                 nameState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
-            label = { Text(text = "Introduce tu nombre", modifier = Modifier.align(Alignment.Start).padding(start = 1.dp)) },
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
+            label = { Text(text = "Introduce tu nombre", modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 1.dp)) },
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
-
         Spacer(modifier = Modifier.height(8.dp))
-
         Text(text = "APELLIDOS",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
 
         TextField(
             value = surnameState.value,
             onValueChange = { newValue ->
                 surnameState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
-            label = { Text(text = "Introduce tus apellidos", modifier = Modifier.align(Alignment.Start).padding(start = 1.dp)) },
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
+            label = { Text(text = "Introduce tus apellidos", modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 1.dp)) },
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
@@ -112,15 +147,21 @@ fun RegisterScreen(navController: NavHostController) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
 
         TextField(
             value = emailState.value,
             onValueChange = { newValue ->
                 emailState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
-            label = { Text(text = "Introduce tu email", modifier = Modifier.align(Alignment.Start).padding(start = 1.dp)) },
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
+            label = { Text(text = "Introduce tu email", modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 1.dp)) },
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
@@ -132,15 +173,21 @@ fun RegisterScreen(navController: NavHostController) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
 
         TextField(
             value = passwordState.value,
             onValueChange = { newValue ->
                 passwordState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
-            label = { Text(text = "Introduce tu contraseña", modifier = Modifier.align(Alignment.Start).padding(start = 1.dp)) },
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
+            label = { Text(text = "Introduce tu contraseña", modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 1.dp)) },
             visualTransformation = PasswordVisualTransformation(),
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
@@ -153,15 +200,21 @@ fun RegisterScreen(navController: NavHostController) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
 
         TextField(
             value = repitPasswordState.value,
             onValueChange = { newValue ->
                 repitPasswordState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
-            label = {Text(text = "Introduce tu contraseña", modifier = Modifier.align(Alignment.Start).padding(start = 1.dp))},
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
+            label = {Text(text = "Introduce tu contraseña", modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 1.dp))},
             visualTransformation = PasswordVisualTransformation(),
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
@@ -191,7 +244,11 @@ fun RegisterScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-                authManagerGoogle()
+                val options = GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN
+                ).requestIdToken(token).requestEmail().build()
+                val googleClient = GoogleSignIn.getClient(context, options)
+                googleLauncher.launch(googleClient.signInIntent)
             },
             shape = MaterialTheme.shapes.medium,
             border = BorderStroke(2.dp, Color(android.graphics.Color.parseColor("#007562"))),
@@ -209,9 +266,7 @@ fun RegisterScreen(navController: NavHostController) {
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
-
                 Spacer(modifier = Modifier.width(8.dp))
-
                 Text(
                     text = "REGISTRO CON GOOGLE",
                     fontWeight = FontWeight.Bold,
@@ -249,7 +304,7 @@ fun RegisterScreen(navController: NavHostController) {
 private fun authManage(email: String, pass: String, name: String, surname: String, navController: NavHostController): Boolean {
     val authManager = FirebaseAuth()
     var result = false
-    authManager.register(email, pass) { success, _ ->
+    authManager.register(email, pass, name, surname) { success, _ ->
         if (success) {
             result = true
             navController.navigate(LateralScreens.LoginScreen.route)
@@ -258,13 +313,7 @@ private fun authManage(email: String, pass: String, name: String, surname: Strin
     return result
 }
 
-private fun authManagerGoogle() {
+private fun authManagerGoogle(credential: AuthCredential, nav:() -> Unit) {
     val authManager = FirebaseAuth()
-    authManager.googleRegister()
+    authManager.googleRegister(credential)
 }
-
-/*@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen()
-}*/
