@@ -83,7 +83,7 @@ fun LoginScreen(navController: NavHostController) {
                 navController.navigate(AppScreens.ProfileScreen.route)
             }
         } catch (e: Exception) {
-            Log.d("Error lanzadno google", "El servicio para iniciar con Google no se lanzó")
+            Log.d("Error lanzando google", "El servicio para iniciar con Google no se lanzó")
         }
     }
 

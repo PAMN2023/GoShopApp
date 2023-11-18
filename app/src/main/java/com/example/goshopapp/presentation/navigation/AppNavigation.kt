@@ -26,13 +26,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.SplashScreen.route,
-         enterTransition = {
-            EnterTransition.None
-        },
-        exitTransition = {
-            ExitTransition.None
-        }
+        startDestination = AppScreens.SplashScreen.route
     ) {
         composable(AppScreens.SplashScreen.route) {
             SplashScreen(navController)
