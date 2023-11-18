@@ -30,11 +30,6 @@ fun ProfileScreen(navController: NavHostController) {
     val buttonColor = Color(android.graphics.Color.parseColor("#007562"))
     val authManager = FirebaseAuth()
 
-    if (authManager.getCurrentUserId() == null) {
-        navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
-        navController.navigate(LateralScreens.LoginScreen.route)
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
