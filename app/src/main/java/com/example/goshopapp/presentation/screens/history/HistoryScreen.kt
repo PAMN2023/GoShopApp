@@ -1,4 +1,4 @@
-package com.example.goshopapp.presentation.screens.home
+package com.example.goshopapp.presentation.screens.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,17 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HomeScreen() {
+fun HistoryScreen() {
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Text(text = "Home Screen")
+        Text(text = "History Screen")
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen()
+fun HistoryScreenPreview() {
+    HistoryScreen()
 }
