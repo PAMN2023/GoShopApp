@@ -27,6 +27,10 @@ class FirebaseAuth {
             }
     }
 
+    fun logout() {
+        firebaseAuth.signOut()
+    }
+
     fun googleRegister() {
 
     }

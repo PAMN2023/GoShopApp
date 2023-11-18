@@ -85,26 +85,4 @@ fun TopBar(
 
         }
     }
-
-    /*if (isTopBarVisible.value) {
-        CenterAlignedTopAppBar(
-            title = {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_header),
-                    contentDescription = "GoShop Logo",
-                    modifier = Modifier.size(40.dp, 40.dp)
-                )
-                    },
-            navigationIcon = {
-                IconButton(onClick = {
-                    scope.launch {
-                        drawerState.open()
-                    }
-                }) {
-                    Icon(Icons.Outlined.Menu,
-                        "Abrir Menú Lateral")
-                }
-            }
-        )
-    }*/
 }

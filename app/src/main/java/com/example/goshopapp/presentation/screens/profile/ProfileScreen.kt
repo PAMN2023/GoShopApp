@@ -15,16 +15,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.goshopapp.R
+import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 
 val buttonTextStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavHostController) {
     val buttonColor = Color(android.graphics.Color.parseColor("#007562"))
+    val authManager = FirebaseAuth()
+
+    if (authManager.getCurrentUserId() == null) {
+        navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+        navController.navigate(LateralScreens.LoginScreen.route)
+    }
 
     Box(
         modifier = Modifier
@@ -131,7 +140,10 @@ fun ProfileScreen() {
 
             // Botón "Cerrar Sesión"
             Button(
-                onClick = { /* Acción al hacer clic */ },
+                onClick = {
+                    authManager.logout()
+                    navController.navigate(LateralScreens.LoginScreen.route)
+                          },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(buttonColor, contentColor = Color.White),
                 shape = RoundedCornerShape(10.dp),
@@ -201,8 +213,9 @@ fun ButtonWithIcon(
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
     ProfileScreen()
-}
+}*/

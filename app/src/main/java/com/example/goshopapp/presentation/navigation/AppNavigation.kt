@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.goshopapp.data.FirebaseAuth
 import com.example.goshopapp.presentation.screens.expenses.ExpensesScreen
 import com.example.goshopapp.presentation.screens.favourites.FavouritesScreen
 import com.example.goshopapp.presentation.screens.history.HistoryScreen
@@ -33,13 +34,13 @@ fun AppNavigation(
             ScannerScreen()
         }
         composable(AppScreens.ProfileScreen.route) {
-            ProfileScreen()
+            ProfileScreen(navController)
         }
         composable(LateralScreens.LoginScreen.route) {
-            LoginScreen()
+            LoginScreen(navController)
         }
         composable(LateralScreens.RegisterScreen.route) {
-            RegisterScreen()
+            RegisterScreen(navController)
         }
         composable(LateralScreens.ListsScreen.route) {
             ListsScreen()

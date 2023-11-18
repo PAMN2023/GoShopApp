@@ -2,6 +2,7 @@
 
 package com.example.goshopapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -53,7 +55,7 @@ fun MainScreen() {
         HomeScreen,
         ProfileScreen
     )
-    
+
     LateralMenu(
         navController = navController,
         drawerState = drawerState
