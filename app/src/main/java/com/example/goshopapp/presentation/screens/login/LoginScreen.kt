@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -36,12 +38,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.goshopapp.MainScreen
 import com.example.goshopapp.R
 import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.presentation.components.LateralMenu
+import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     var success by remember { mutableStateOf(false) }
@@ -56,7 +63,9 @@ fun LoginScreen() {
         containerColor = Color(android.graphics.Color.parseColor("#007562")),
         contentColor = Color(android.graphics.Color.parseColor("#007562"))
     )
+
     Spacer(modifier = Modifier.height(16.dp))
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,30 +76,44 @@ fun LoginScreen() {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
+
         TextField(
             value = emailState.value,
             onValueChange = { newValue ->
                 emailState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
-            label = { Text(text = "Introduce tu email", modifier = Modifier.align(Alignment.Start).padding(start = 1.dp)) },
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
+            label = { Text(text = "Introduce tu email", modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 1.dp)) },
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(text = "CONTRASEÑA",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
+
         TextField(
             value = passwordState.value,
             onValueChange = { newValue ->
                 passwordState.value = newValue
             },
-            modifier = Modifier.width(350.dp).height(50.dp),
+            modifier = Modifier
+                .width(350.dp)
+                .height(50.dp),
             label = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -109,23 +132,31 @@ fun LoginScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(text = "¿Has olvidado tu contraseña?",
             color = Color(android.graphics.Color.parseColor("#007562")),
             textAlign = TextAlign.Left,
             fontSize = 14.sp,
-            modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 35.dp))
+
         Spacer(modifier = Modifier.height(35.dp))
+
         Button(
             onClick = {
-                authManage(emailState.value, passwordState.value)
+                authManage(emailState.value, passwordState.value, navController)
             },
             shape = MaterialTheme.shapes.medium,
             colors = customButtonColors
         ) {
             Text(text = "INICIA SESIÓN", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
+
         Spacer(modifier = Modifier.height(10.dp))
+
         Button(
             onClick = {
                 authManagerGoogle()
@@ -146,7 +177,9 @@ fun LoginScreen() {
                     contentDescription = null, // Provide content description if needed
                     modifier = Modifier.size(28.dp) // Set image size as needed
                 )
+
                 Spacer(modifier = Modifier.width(8.dp)) // Add some space between the image and text
+
                 Text(
                     text = "INICIO DE SESIÓN\n    CON GOOGLE",
                     fontWeight = FontWeight.Bold,
@@ -155,17 +188,21 @@ fun LoginScreen() {
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(50.dp))
+
         Text(text = "¿No tienes cuenta?",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally))
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Button(
             onClick = {
-                //Navegar a Registro
+                navController.navigate(LateralScreens.RegisterScreen.route)
             },
             shape = MaterialTheme.shapes.medium,
             colors = customButtonColors
@@ -173,21 +210,17 @@ fun LoginScreen() {
             Text(text = "REGISTRATE", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
     }
+
     Spacer(modifier = Modifier.height(16.dp))
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen()
-}
-
-private fun authManage(email: String, pass: String): Boolean {
+private fun authManage(email: String, pass: String, navController: NavHostController): Boolean {
     val authManager = FirebaseAuth()
     var result = false
-    authManager.login(email, pass) { success, message ->
+    authManager.login(email, pass) { success, _ ->
         if (success) {
             result = true
+            navController.navigate(AppScreens.HomeScreen.route)
         }
     }
     return result
@@ -197,3 +230,9 @@ private fun authManagerGoogle() {
     val authManager = FirebaseAuth()
     authManager.googleLogin()
 }
+
+/*@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    LoginScreen()
+}*/

@@ -36,12 +36,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.goshopapp.R
 import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.presentation.navigation.LateralScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavHostController) {
     val nameState = remember { mutableStateOf("") }
     val surnameState = remember { mutableStateOf("") }
     val emailState = remember { mutableStateOf("") }
@@ -57,7 +59,9 @@ fun RegisterScreen() {
         containerColor = Color(android.graphics.Color.parseColor("#007562")),
         contentColor = Color(android.graphics.Color.parseColor("#007562"))
     )
+
     Spacer(modifier = Modifier.height(16.dp))
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,6 +73,7 @@ fun RegisterScreen() {
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+
         TextField(
             value = nameState.value,
             onValueChange = { newValue ->
@@ -79,13 +84,16 @@ fun RegisterScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(text = "APELLIDOS",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+
         TextField(
             value = surnameState.value,
             onValueChange = { newValue ->
@@ -96,13 +104,16 @@ fun RegisterScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(text = "EMAIL",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+
         TextField(
             value = emailState.value,
             onValueChange = { newValue ->
@@ -113,13 +124,16 @@ fun RegisterScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(text = "CONTRASEÑA",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+
         TextField(
             value = passwordState.value,
             onValueChange = { newValue ->
@@ -131,13 +145,16 @@ fun RegisterScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(text = "REPITE TU CONTRASEÑA",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Start).padding(start = 35.dp))
+
         TextField(
             value = repitPasswordState.value,
             onValueChange = { newValue ->
@@ -149,13 +166,19 @@ fun RegisterScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+
         Spacer(modifier = Modifier.height(18.dp))
+
         Button(
             onClick = {
                 if (passwordState.value == repitPasswordState.value) {
-                    if(authManage(emailState.value, passwordState.value, nameState.value, surnameState.value)) {
-                        success = true
-                    }
+                    authManage(
+                        emailState.value,
+                        passwordState.value,
+                        nameState.value,
+                        surnameState.value,
+                        navController
+                    )
                 }
             },
             shape = MaterialTheme.shapes.medium,
@@ -163,7 +186,9 @@ fun RegisterScreen() {
         ) {
             Text(text = "REGÍSTRATE", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
+
         Spacer(modifier = Modifier.width(9.dp))
+
         Button(
             onClick = {
                 authManagerGoogle()
@@ -184,7 +209,9 @@ fun RegisterScreen() {
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
                     text = "REGISTRO CON GOOGLE",
                     fontWeight = FontWeight.Bold,
@@ -193,17 +220,21 @@ fun RegisterScreen() {
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(30.dp))
+
         Text(text = "¿Ya tienes cuenta?",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally))
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Button(
             onClick = {
-                //Navegar a Inicio de Sesión
+                navController.navigate(LateralScreens.LoginScreen.route)
             },
             shape = MaterialTheme.shapes.medium,
             colors = customButtonColors
@@ -211,21 +242,17 @@ fun RegisterScreen() {
             Text(text = "INICIA SESIÓN", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
     }
+
     Spacer(modifier = Modifier.height(16.dp))
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen()
-}
-
-private fun authManage(email: String, pass: String, name: String, surname: String): Boolean {
+private fun authManage(email: String, pass: String, name: String, surname: String, navController: NavHostController): Boolean {
     val authManager = FirebaseAuth()
     var result = false
-    authManager.register(email, pass) { success, message ->
+    authManager.register(email, pass) { success, _ ->
         if (success) {
             result = true
+            navController.navigate(LateralScreens.LoginScreen.route)
         }
     }
     return result
@@ -235,3 +262,9 @@ private fun authManagerGoogle() {
     val authManager = FirebaseAuth()
     authManager.googleRegister()
 }
+
+/*@Preview(showBackground = true)
+@Composable
+fun RegisterScreenPreview() {
+    RegisterScreen()
+}*/
