@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,8 @@ fun RegisterScreen(navController: NavHostController) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     val repitPasswordState = remember { mutableStateOf("") }
-    var success by remember { mutableStateOf(false) }
+    val currentImage = remember { mutableStateOf(R.drawable.icon_eye) }
+    val passwordMode = remember { mutableStateOf(false) }
     val textFieldsColors = TextFieldDefaults.textFieldColors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
@@ -185,10 +187,36 @@ fun RegisterScreen(navController: NavHostController) {
             modifier = Modifier
                 .width(350.dp)
                 .height(50.dp),
-            label = { Text(text = "Introduce tu contraseña", modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 1.dp)) },
-            visualTransformation = PasswordVisualTransformation(),
+            label = { Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Introduce tu contraseña", modifier = Modifier.padding(start = 1.dp))
+                Spacer(modifier = Modifier.width(110.dp))
+                Button(
+                    onClick = {
+                        if (currentImage.value == R.drawable.icon_eye) {
+                            currentImage.value = R.drawable.icon_cross_eye
+                            passwordMode.value = true
+                        } else {
+                            currentImage.value = R.drawable.icon_eye
+                            passwordMode.value = false
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(id = currentImage.value),
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            } },
+            visualTransformation = if (passwordMode.value) VisualTransformation.None else PasswordVisualTransformation(),
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
@@ -215,7 +243,7 @@ fun RegisterScreen(navController: NavHostController) {
             label = {Text(text = "Introduce tu contraseña", modifier = Modifier
                 .align(Alignment.Start)
                 .padding(start = 1.dp))},
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (passwordMode.value) VisualTransformation.None else PasswordVisualTransformation(),
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
