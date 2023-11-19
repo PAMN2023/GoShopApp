@@ -279,6 +279,7 @@ private fun authManage(email: String, pass: String, navController: NavHostContro
     authManager.login(email, pass) { success, _ ->
         if (success) {
             result = true
+            navController.popBackStack()
             navController.navigate(AppScreens.HomeScreen.route)
         }
     }

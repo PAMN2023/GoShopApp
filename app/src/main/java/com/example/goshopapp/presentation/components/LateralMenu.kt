@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.LateralScreens.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -121,7 +122,7 @@ fun LateralMenu(
                                         drawerState.close()
                                     }
                                     authManager.logout()
-                                    navController.navigate(LoginScreen.route)
+                                    navController.navigate(AppScreens.HomeScreen.route)
                                 })
                         )
                     }
