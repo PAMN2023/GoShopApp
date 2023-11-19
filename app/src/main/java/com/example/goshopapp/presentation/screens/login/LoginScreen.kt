@@ -23,8 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,6 +59,7 @@ fun LoginScreen(navController: NavHostController) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     val currentImage = remember { mutableStateOf(R.drawable.icon_eye) }
+    var isEyeVisible by remember { mutableStateOf(false) }
     val passwordMode = remember { mutableStateOf(false) }
     val textFieldsColors = TextFieldDefaults.textFieldColors(
         focusedIndicatorColor = Color.Transparent,
@@ -137,6 +140,7 @@ fun LoginScreen(navController: NavHostController) {
             value = passwordState.value,
             onValueChange = { newValue ->
                 passwordState.value = newValue
+                isEyeVisible = newValue.isNotEmpty()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,27 +154,30 @@ fun LoginScreen(navController: NavHostController) {
                 )
             },
             trailingIcon = {
-                Button(
-                    onClick = {
-                        if (currentImage.value == R.drawable.icon_eye) {
-                            currentImage.value = R.drawable.icon_cross_eye
-                            passwordMode.value = true
-                        } else {
-                            currentImage.value = R.drawable.icon_eye
-                            passwordMode.value = false
-                        }
-                    },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.Transparent)
-                ) {
-                    Image(
-                        painter = painterResource(id = currentImage.value),
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp)
-                    )
+                if (isEyeVisible) {
+                    Button(
+                        onClick = {
+                            if (currentImage.value == R.drawable.icon_eye) {
+                                currentImage.value = R.drawable.icon_cross_eye
+                                passwordMode.value = true
+                            } else {
+                                currentImage.value = R.drawable.icon_eye
+                                passwordMode.value = false
+                            }
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = Color.Transparent)
+                    ) {
+                        Image(
+                            painter = painterResource(id = currentImage.value),
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
+
             },
             maxLines = 1,
             visualTransformation = if (passwordMode.value) VisualTransformation.None else PasswordVisualTransformation(),
