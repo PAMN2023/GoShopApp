@@ -1,4 +1,4 @@
-package com.example.goshopapp.model
+package com.example.goshopapp.domain.model
 
 data class Product(
     val name: String = "",

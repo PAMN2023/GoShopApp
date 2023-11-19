@@ -1,6 +1,6 @@
-package com.example.goshopapp.model
+package com.example.goshopapp.domain.model
 
-data class List<T>(
+data class List(
     val name: String,
     val items: MutableList<String> = mutableListOf()
 ) {
