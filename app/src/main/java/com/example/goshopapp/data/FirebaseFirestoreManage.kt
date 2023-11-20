@@ -48,8 +48,10 @@ class FirebaseFirestoreManage {
                         Product(name, price, image)
                     }
 
+                    val inspirationImage = documentSnapshot.get("inspirationImage") as? String ?: ""
+
                     // Crear el objeto HomePageData
-                    val homeData = HomePageData(slider, products)
+                    val homeData = HomePageData(slider, products, inspirationImage)
                     callback.onHomePageDataReceived(homeData)
 
                     Log.d("DatosHome", homeData.toString())

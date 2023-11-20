@@ -4,5 +4,6 @@ import kotlin.collections.List
 
 data class HomePageData(
     val slider: List<String>,
-    val products: List<Product>
+    val products: List<Product>,
+    val inspirationImage: String
 )

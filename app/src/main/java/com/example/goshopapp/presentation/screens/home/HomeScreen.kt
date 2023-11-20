@@ -1,6 +1,8 @@
 package com.example.goshopapp.presentation.screens.home
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
 import com.example.goshopapp.data.FirebaseFirestoreManage
@@ -35,10 +38,19 @@ fun HomeScreen() {
         onDispose { }
     }
 
-    homeData?.let { data ->
+    Column(modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ){
+        homeData?.let { HomeContent(it) }
+    }
+
+    /*homeData?.let { data ->
         // Mostrar los nombres de los productos
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             items(data.products) { product ->
                 Text(text = product.name)
@@ -49,7 +61,7 @@ fun HomeScreen() {
                 )
             }
         }
-    }
+    }*/
 }
 
 /*@Preview(showBackground = true)
