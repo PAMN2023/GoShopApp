@@ -1,8 +1,8 @@
 package com.example.goshopapp.domain.model
 
-data class List(
+data class Lists(
     val name: String,
-    val items: MutableList<String> = mutableListOf()
+    val items: MutableList<Product> = mutableListOf()
 ) {
     fun toMap(): MutableMap<String, Any?> {
         return mutableMapOf(
