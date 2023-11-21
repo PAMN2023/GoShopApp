@@ -1,5 +1,7 @@
 package com.example.goshopapp.presentation.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -20,6 +22,8 @@ import com.example.goshopapp.presentation.screens.splash.SplashScreen
 fun AppNavigation(
     navController: NavHostController
 ) {
+    val authManager = FirebaseAuth()
+
     NavHost(
         navController = navController,
         startDestination = AppScreens.SplashScreen.route
@@ -34,7 +38,12 @@ fun AppNavigation(
             ScannerScreen()
         }
         composable(AppScreens.ProfileScreen.route) {
-            ProfileScreen(navController)
+            if (authManager.getCurrentUserId() == null) {
+                navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+                navController.navigate(LateralScreens.LoginScreen.route)
+            } else {
+                ProfileScreen(navController)
+            }
         }
         composable(LateralScreens.LoginScreen.route) {
             LoginScreen(navController)
