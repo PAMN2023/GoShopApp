@@ -3,7 +3,7 @@ package com.example.goshopapp.domain.model
 import kotlin.collections.List
 
 data class HomePageData(
-    val slider: List<String>,
+    val slider: List<Product>,
     val products: List<Product>,
-    val inspirationImage: String
+    val inspiration: String
 )

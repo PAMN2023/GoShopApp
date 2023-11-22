@@ -36,7 +36,16 @@ class FirebaseFirestoreManage {
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
                     // El documento existe
-                    val slider = documentSnapshot.get("slider") as? List<String> ?: emptyList()
+                    val slider =
+                        documentSnapshot.get("slider") as? List<Map<String, Any>> ?: emptyList()
+
+                    val slider_products = slider.map { sliderMap ->
+                        val name = sliderMap["name"] as? String ?: ""
+                        val price = sliderMap["price"] as? String ?: ""
+                        val image = sliderMap["image"] as? String ?: ""
+                        Product(name, price, image)
+                    }
+
                     val productsList =
                         documentSnapshot.get("products") as? List<Map<String, Any>> ?: emptyList()
 
@@ -51,7 +60,7 @@ class FirebaseFirestoreManage {
                     val inspirationImage = documentSnapshot.get("inspirationImage") as? String ?: ""
 
                     // Crear el objeto HomePageData
-                    val homeData = HomePageData(slider, products, inspirationImage)
+                    val homeData = HomePageData(slider_products, products, inspirationImage)
                     callback.onHomePageDataReceived(homeData)
 
                     Log.d("DatosHome", homeData.toString())
@@ -66,5 +75,4 @@ class FirebaseFirestoreManage {
                 Log.d("Error", "Error al obtener datos: $exception")
             }
     }
-    
 }
