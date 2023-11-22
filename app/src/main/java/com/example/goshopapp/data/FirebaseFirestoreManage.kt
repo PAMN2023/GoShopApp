@@ -212,7 +212,7 @@ class FirebaseFirestoreManage {
                     val slider =
                         documentSnapshot.get("slider") as? List<Map<String, Any>> ?: emptyList()
 
-                    val slider_products = slider.map { sliderMap ->
+                    val sliderProducts = slider.map { sliderMap ->
                         val name = sliderMap["name"] as? String ?: ""
                         val price = sliderMap["price"] as? String ?: ""
                         val image = sliderMap["image"] as? String ?: ""
@@ -233,7 +233,7 @@ class FirebaseFirestoreManage {
                     val inspirationImage = documentSnapshot.get("inspirationImage") as? String ?: ""
 
                     // Crear el objeto HomePageData
-                    val homeData = HomePageData(slider_products, products, inspirationImage)
+                    val homeData = HomePageData(sliderProducts, products, inspirationImage)
                     callback.onHomePageDataReceived(homeData)
 
                     Log.d("DatosHome", homeData.toString())
