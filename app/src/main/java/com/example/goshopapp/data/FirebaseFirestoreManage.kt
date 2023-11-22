@@ -35,7 +35,7 @@ class FirebaseFirestoreManage {
         if (response) {
             val items: MutableList<Product> = mutableListOf()
             val favData = Lists("Favoritos", items)
-            fireStore.collection("Usuarios").document(uid).collection("Listas").add(favData)
+            fireStore.collection("Usuarios").document(uid).collection("Listas").document("Favoritos").set(favData)
                 .addOnSuccessListener{
                     response = true
                 }.addOnFailureListener {
@@ -47,13 +47,18 @@ class FirebaseFirestoreManage {
     }
 
     /**
-     * Creates a new list within the user's `Listas` sub-collection.
+     * Creates a new list within the user's `Listas` sub-collection if not exists 
+     *  a list with the same name.
      *
      * @param uid 'String' with the unique identifier of the user
      * @param listName 'String' with the name of the list to create
      * @return A `Boolean` value indicating whether the list was successfully created
      */
     fun createUserList(uid: String, listName: String): Boolean {
+        if (checkListExist(uid, listName)) {
+            return false
+            Log.d("Error", "Ya existe una lista con este nombre")
+        }
         var response = false
         val items: MutableList<Product> = mutableListOf()
         val listData = Lists(listName, items)
@@ -62,6 +67,23 @@ class FirebaseFirestoreManage {
                 response = true
             }
         return response
+    }
+
+    /**
+     * Checks if a list with the name 'listName' exists on the Data Base
+     * 
+     * @param uid 'String' with the unique identifier of the user
+     * @param listName 'String' with the name of the list to create
+     * @return A `Boolean` value indicating if the list exists or not
+     */
+    private fun checkListExist(uid: String, listName: String): Boolean {
+        val lists = getUserLists(uid)
+        var res = false
+        lists.whereEqualTo("name", listName).get()
+            .addOnSuccessListener{
+                res = true
+            }
+        return res
     }
 
     /**
@@ -86,12 +108,14 @@ class FirebaseFirestoreManage {
      *
      * @param uid 'String' with the unique identifier of the user
      * @param listName 'String' with the name of the list to add items to
-     * @param items A `MutableMap<String, String>` representing the items to add
+     * @param item A `Product` representing the item to add
      * @return A `Boolean` value indicating whether the items were successfully added
      */
-    fun addItemToUserList(uid: String, listName: String, items: MutableList<Product>): Boolean {
+    fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
         var response = false
         val listId = getUserListIdByName(uid, listName)
+        val items = getItemsOfUserList(uid, listId)
+        items.add(item)
         val listData = Lists(listName, items)
         fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
             .addOnSuccessListener{
