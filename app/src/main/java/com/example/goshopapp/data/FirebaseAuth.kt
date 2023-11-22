@@ -69,4 +69,9 @@ class FirebaseAuth {
         val currentUser = firebaseAuth.currentUser
         return currentUser?.uid
     }
+
+    fun getCurrentUserEmail(): String? {
+        val currentUser = firebaseAuth.currentUser
+        return currentUser?.email
+    }
 }

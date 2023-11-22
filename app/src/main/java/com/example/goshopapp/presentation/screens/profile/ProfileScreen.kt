@@ -9,19 +9,20 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.goshopapp.R
 import com.example.goshopapp.data.FirebaseAuth
-import com.example.goshopapp.presentation.navigation.AppScreens
-import com.example.goshopapp.presentation.navigation.LateralScreens
 
 val buttonTextStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
@@ -29,11 +30,7 @@ val buttonTextStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
 fun ProfileScreen(navController: NavHostController) {
     val buttonColor = Color(android.graphics.Color.parseColor("#007562"))
     val authManager = FirebaseAuth()
-
-    if (authManager.getCurrentUserId() == null) {
-        navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
-        navController.navigate(LateralScreens.LoginScreen.route)
-    }
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -98,10 +95,12 @@ fun ProfileScreen(navController: NavHostController) {
                                 style = buttonTextStyle
                             )
 
-                            Text(
-                                text = "correo@example.com",
-                                style = TextStyle(fontSize = 14.sp)
-                            )
+                            authManager.getCurrentUserEmail()?.let {
+                                Text(
+                                    text = it,
+                                    style = TextStyle(fontSize = 14.sp)
+                                )
+                            }
                         }
                     }
 
@@ -141,18 +140,20 @@ fun ProfileScreen(navController: NavHostController) {
             // Botón "Cerrar Sesión"
             Button(
                 onClick = {
+                    navController.popBackStack()
+                    //navController.navigate(AppScreens.HomeScreen.route)
+
                     authManager.logout()
-                    navController.navigate(LateralScreens.LoginScreen.route)
+                    //navController.navigate(LateralScreens.LoginScreen.route)
                           },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(buttonColor, contentColor = Color.White),
                 shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(2.dp, Color.Gray)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(2.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -201,7 +202,7 @@ fun ButtonWithIcon(
                 painter = painterResource(iconId),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(32.dp) // Ajusta el tamaño del icono aquí
+                    .size(32.dp)
                     .padding(2.dp)
             )
             Spacer(modifier = Modifier.width(32.dp)) // Espacio entre icono y texto
@@ -213,9 +214,9 @@ fun ButtonWithIcon(
     }
 }
 
-/*
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen()
-}*/
+    val navController = rememberNavController()
+    ProfileScreen(navController)
+}
