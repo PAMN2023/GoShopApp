@@ -70,6 +70,19 @@ class FirebaseAuth {
         return currentUser?.uid
     }
 
+    fun getCurrentProvider(): String {
+        val providers = firebaseAuth.currentUser?.providerData?.map { it.providerId }
+
+        if (providers != null) {
+            if (providers.contains("google.com")) {
+                return "google.com"
+            } else if (providers.contains("password")) {
+                return "email"
+            }
+        }
+        return ""
+    }
+
     fun getCurrentUserEmail(): String? {
         val currentUser = firebaseAuth.currentUser
         return currentUser?.email
