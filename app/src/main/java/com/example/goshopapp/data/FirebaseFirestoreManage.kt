@@ -200,17 +200,23 @@ class FirebaseFirestoreManage {
         return fireStore.collection("Usuarios").document(uid).collection("Listas")
     }
 
-    fun getIterableUserLists(uid: String): Collection<Lists> {
-        val query = FirebaseFirestore.getInstance().collection("Usuarios").document(uid).collection("Listas")
-        val userLists = mutableListOf<Lists>()
-        query.addSnapshotListener { snapshot, error ->
+    fun getIterableUserLists(uid: String): MutableList<Lists> {
+        val userLists: MutableList<Lists> = mutableListOf()
+        getUserLists(uid).addSnapshotListener { snapshot, error ->
             if (error != null) {
+                Log.e("Error", "Error getting user lists: ${error.message}")
                 return@addSnapshotListener
             }
             snapshot?.documents?.forEach { document ->
-                //userLists.add(document.toObject<Lists>()!!)
+                val documentData = document.data
+                if (documentData != null) {
+                    val listData = Lists(documentData["name"].toString(), documentData["shared"] as Boolean, documentData["items"] as MutableList<Product>)
+                    userLists.add(listData)
+                }
             }
+            Log.d("Info", "Retrieved user lists: $userLists")
         }
+        Log.d("Info", "Returned user lists: $userLists")
         return userLists
     }
 
