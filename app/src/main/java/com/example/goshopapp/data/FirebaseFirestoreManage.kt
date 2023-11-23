@@ -36,7 +36,7 @@ class FirebaseFirestoreManage {
                 Log.d("Error", "Falló ${it}")
             }
         val items: MutableList<Product> = mutableListOf()
-        val favData = Lists("Favoritos", false, items).toMap()
+        val favData = Lists("Favoritos", false, "0", "https://cdn.icon-icons.com/icons2/290/PNG/512/favourites_30824.png", items).toMap()
         fireStore.collection("Usuarios").document(uid).collection("Listas").document("Favoritos").set(favData)
             .addOnSuccessListener{
                 response = true
@@ -55,14 +55,14 @@ class FirebaseFirestoreManage {
      * @param listName 'String' with the name of the list to create
      * @return A `Boolean` value indicating whether the list was successfully created
      */
-    fun createUserList(uid: String, listName: String): Boolean {
+    fun createUserList(uid: String, listName: String, img: String): Boolean {
         if (checkListExist(uid, listName)) {
             return false
             Log.d("Error", "Ya existe una lista con este nombre")
         }
         var response = false
         val items: MutableList<Product> = mutableListOf()
-        val listData = Lists(listName, false, items).toMap()
+        val listData = Lists(listName, false, "0", img, items).toMap()
         fireStore.collection("Usuarios").document(uid).collection("Listas").add(listData)
             .addOnSuccessListener{
                 response = true
@@ -117,7 +117,7 @@ class FirebaseFirestoreManage {
         val listId = getUserListIdByName(uid, listName)
         val userList = getUserListById(uid, listId)
         userList?.items?.add(item)
-        val listData = userList?.let { Lists(listName, userList.shared, it.items).toMap() }
+        val listData = userList?.let { Lists(listName, userList.shared, userList.aproxPrice, userList.image, it.items).toMap() }
         if (listData != null) {
             fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
                 .addOnSuccessListener{
@@ -145,7 +145,7 @@ class FirebaseFirestoreManage {
                 Log.d("Deletion", "Item with name '$itemName' removed")
             }
         }
-        val listData = userList?.let { Lists(listName, it.shared, userList.items).toMap() }
+        val listData = userList?.let { Lists(listName, it.shared, userList.aproxPrice, userList.image, userList.items).toMap() }
         if (listData != null) {
             fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
                 .addOnSuccessListener{
@@ -213,7 +213,7 @@ class FirebaseFirestoreManage {
             snapshot?.documents?.forEach { document ->
                 val documentData = document.data
                 if (documentData != null) {
-                    val listData = Lists(documentData["name"].toString(), documentData["shared"] as Boolean, documentData["items"] as MutableList<Product>)
+                    val listData = Lists(documentData["name"].toString(), documentData["shared"] as Boolean, documentData["aproxPrice"].toString(), documentData["image"].toString(), documentData["items"] as MutableList<Product>)
                     userLists.add(listData)
                     callback.onUserListsReceived(userLists)
                 }
