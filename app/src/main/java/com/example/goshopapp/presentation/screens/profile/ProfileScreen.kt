@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.goshopapp.R
 import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.presentation.navigation.LateralScreens
 
 val buttonTextStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
@@ -122,7 +123,7 @@ fun ProfileScreen(navController: NavHostController) {
 
             // Botones adicionales fuera de la caja
             ButtonWithIcon(
-                onClick = { /* Acción al hacer clic */ },
+                onClick = { navController.navigate(LateralScreens.ListsScreen.route) },
                 modifier = Modifier.fillMaxWidth(),
                 iconId = R.drawable.icon_user_lists,
                 text = "Mis Listas"

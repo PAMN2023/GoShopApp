@@ -17,6 +17,7 @@ import com.example.goshopapp.presentation.screens.profile.ProfileScreen
 import com.example.goshopapp.presentation.screens.register.RegisterScreen
 import com.example.goshopapp.presentation.screens.scanner.ScannerScreen
 import com.example.goshopapp.presentation.screens.splash.SplashScreen
+import com.example.goshopapp.presentation.screens.userlists.UserListsScreen
 
 @Composable
 fun AppNavigation(
@@ -62,6 +63,9 @@ fun AppNavigation(
         }
         composable(LateralScreens.HistoryScreen.route) {
             HistoryScreen()
+        }
+        composable(LateralScreens.ListsScreen.route) {
+            UserListsScreen(navController)
         }
     }
 }
