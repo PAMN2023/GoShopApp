@@ -78,8 +78,8 @@ fun RegisterScreen(navController: NavHostController) {
         try {
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            authManagerGoogle(credential){
-                navController.navigate(AppScreens.ProfileScreen.route)
+            authManagerGoogle(credential, navController){
+                navController.navigate(AppScreens.HomeScreen.route)
             }
         } catch (e: Exception) {
             Log.d("Error lanzadno google", "El servicio para iniciar con Google no se lanzó")
@@ -388,9 +388,10 @@ private fun authManage(email: String, pass: String, name: String, surname: Strin
     return result
 }
 
-private fun authManagerGoogle(credential: AuthCredential, nav:() -> Unit) {
+private fun authManagerGoogle(credential: AuthCredential, navController: NavHostController, nav:() -> Unit) {
     val authManager = FirebaseAuth()
     authManager.googleRegister(credential)
+    navController.navigate(AppScreens.HomeScreen.route)
 }
 
 @Preview(showBackground = true)

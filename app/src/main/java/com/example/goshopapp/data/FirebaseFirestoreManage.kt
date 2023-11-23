@@ -2,6 +2,7 @@ package com.example.goshopapp.data
 
 import android.util.Log
 import com.example.goshopapp.domain.interfaces.HomePageDataCallback
+import com.example.goshopapp.domain.interfaces.UserDataCallback
 import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.domain.model.Product
@@ -241,6 +242,30 @@ class FirebaseFirestoreManage {
                     callback.onHomePageDataError(Exception("El documento no existe"))
 
                     Log.d("DatosHome", "El documento no funciona")
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Manejar el error
+                Log.d("Error", "Error al obtener datos: $exception")
+            }
+    }
+
+    fun getUserData(uid: String, callback: UserDataCallback) {
+        val userDocument = fireStore.collection("Usuarios").document(uid)
+        val resultMap = mutableMapOf<String, Any>()
+
+        userDocument.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val userName = documentSnapshot.get("userName") as? String ?: ""
+                    val userSurname = documentSnapshot.get("userSurname") as? String ?: ""
+
+                    resultMap["userName"] = userName
+                    resultMap["userSurname"] = userSurname
+
+                    callback.onUserDataReceived(resultMap)
+                } else {
+                    Log.d("DatosUser", "El documento no funciona")
                 }
             }
             .addOnFailureListener { exception ->

@@ -42,7 +42,6 @@ import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.navigation.AppScreens
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -212,7 +211,16 @@ fun HomeContent(homeData: HomePageData, navController: NavHostController) {
                             .shadow(4.dp, shape = RoundedCornerShape(8.dp))
                             .background(Color.White)
                             .padding(16.dp)
-                            .clickable { }
+                            .clickable {
+                                val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+                                Log.d("URL", encodedImageURL)
+                                navController.navigate(AppScreens.ProductDetailsScreen.route
+                                        + "/${product.name}"
+                                        + "/$encodedImageURL"
+                                        + "/Lorem ipsum dolor sit amet, consectetur adipiscing elit consectetur adipiscing elit consectetur adipiscing elit"
+                                        + "/Lorem ipsum dolor sit amet, consectetur adipiscing elit consectetur adipiscing elit consectetur adipiscing elit"
+                                        + "/${product.price}")
+                            }
                     ) {
                         // IMAGEN
                         if (sliderList.isNotEmpty()) {
