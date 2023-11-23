@@ -3,12 +3,14 @@ package com.example.goshopapp.data
 import android.util.Log
 import com.example.goshopapp.domain.interfaces.HomePageDataCallback
 import com.example.goshopapp.domain.interfaces.UserDataCallback
+import com.example.goshopapp.domain.interfaces.UserListsCallback
 import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.domain.model.User
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 class FirebaseFirestoreManage {
 
@@ -33,17 +35,15 @@ class FirebaseFirestoreManage {
             }.addOnFailureListener{
                 Log.d("Error", "Falló ${it}")
             }
-        if (response) {
-            val items: MutableList<Product> = mutableListOf()
-            val favData = Lists("Favoritos", items)
-            fireStore.collection("Usuarios").document(uid).collection("Listas").document("Favoritos").set(favData)
-                .addOnSuccessListener{
-                    response = true
-                }.addOnFailureListener {
-                    response = false
-                    Log.d("Error", "Falló La creación de la colección de Listas del usuario")
-                }
-        }
+        val items: MutableList<Product> = mutableListOf()
+        val favData = Lists("Favoritos", false, items).toMap()
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document("Favoritos").set(favData)
+            .addOnSuccessListener{
+                response = true
+            }.addOnFailureListener {
+                response = false
+                Log.d("Error", "Falló La creación de la colección de Listas del usuario")
+            }
         return response
     }
 
@@ -62,7 +62,7 @@ class FirebaseFirestoreManage {
         }
         var response = false
         val items: MutableList<Product> = mutableListOf()
-        val listData = Lists(listName, items)
+        val listData = Lists(listName, false, items).toMap()
         fireStore.collection("Usuarios").document(uid).collection("Listas").add(listData)
             .addOnSuccessListener{
                 response = true
@@ -115,13 +115,15 @@ class FirebaseFirestoreManage {
     fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
         var response = false
         val listId = getUserListIdByName(uid, listName)
-        val items = getItemsOfUserList(uid, listId)
-        items.add(item)
-        val listData = Lists(listName, items)
-        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
-            .addOnSuccessListener{
-                response = true
-            }
+        val userList = getUserListById(uid, listId)
+        userList?.items?.add(item)
+        val listData = userList?.let { Lists(listName, userList.shared, it.items).toMap() }
+        if (listData != null) {
+            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
+                .addOnSuccessListener{
+                    response = true
+                }
+        }
         return response
     }
 
@@ -136,42 +138,39 @@ class FirebaseFirestoreManage {
     fun deleteItemOfUserList(uid: String, listName: String, itemName: String): Boolean {
         var response = false
         val listId = getUserListIdByName(uid, listName)
-        val items = getItemsOfUserList(uid, listId)
-        items.forEach{
+        val userList = getUserListById(uid, listId)
+        userList?.items?.forEach{
             if (it.name == itemName) {
-                items.remove(it)
+                userList.items.remove(it)
                 Log.d("Deletion", "Item with name '$itemName' removed")
             }
         }
-        val listData = Lists(listName, items)
-        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
-            .addOnSuccessListener{
-                response = true
-            }
+        val listData = userList?.let { Lists(listName, it.shared, userList.items).toMap() }
+        if (listData != null) {
+            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
+                .addOnSuccessListener{
+                    response = true
+                }
+        }
         return response
     }
 
     /**
-     * Retrieves the items associated with a specific list within the user's `Listas` sub-collection.
+     * Obtains a list by the id of the firestore document id
      *
      * @param uid 'String' with the unique identifier of the user
-     * @param listId 'String' with the ID of the list to retrieve items from
-     * @return A `MutableMap<String, String>` representing the 'items' associated with the list
+     * @param listId 'String' with the id of the list to return
+     * @return A `Lists` object with the data of the document on firestore
      */
-    private fun getItemsOfUserList(uid: String, listId: String): MutableList<Product> {
-        var attributeValue: MutableList<Product> = mutableListOf()
+    private fun getUserListById(uid: String, listId: String): Lists? {
+        var userList: Lists? = null
         fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    attributeValue = documentSnapshot.get("items") as MutableList<Product>
-                    Log.d("Attribute", "Valor del atributo 'items': $attributeValue")
-                } else {
-                    Log.d("Error", "La lista con ID '$listId' no existe")
+                    userList = documentSnapshot.toObject(Lists::class.java)!!
                 }
-            }.addOnFailureListener {
-                Log.d("Error", "Fallo al recuperar la lista con ID '$listId'")
             }
-        return attributeValue
+        return userList
     }
 
     /**
@@ -201,6 +200,25 @@ class FirebaseFirestoreManage {
      */
     fun getUserLists(uid: String): CollectionReference {
         return fireStore.collection("Usuarios").document(uid).collection("Listas")
+    }
+
+    fun getIterableUserLists(uid: String, callback: UserListsCallback) {
+        val userLists: MutableList<Lists> = mutableListOf()
+
+        getUserLists(uid).addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.e("Error", "Error getting user lists: ${error.message}")
+                return@addSnapshotListener
+            }
+            snapshot?.documents?.forEach { document ->
+                val documentData = document.data
+                if (documentData != null) {
+                    val listData = Lists(documentData["name"].toString(), documentData["shared"] as Boolean, documentData["items"] as MutableList<Product>)
+                    userLists.add(listData)
+                    callback.onUserListsReceived(userLists)
+                }
+            }
+        }
     }
 
     fun getHomePageData(callback: HomePageDataCallback) {

@@ -18,6 +18,7 @@ import com.example.goshopapp.presentation.screens.profile.ProfileScreen
 import com.example.goshopapp.presentation.screens.register.RegisterScreen
 import com.example.goshopapp.presentation.screens.scanner.ScannerScreen
 import com.example.goshopapp.presentation.screens.splash.SplashScreen
+import com.example.goshopapp.presentation.screens.userlists.UserListsScreen
 
 @Composable
 fun AppNavigation(
@@ -53,7 +54,13 @@ fun AppNavigation(
             RegisterScreen(navController)
         }
         composable(LateralScreens.ListsScreen.route) {
-            ListsScreen()
+            //ListsScreen()
+            if (authManager.getCurrentUserId() == null) {
+                navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+                navController.navigate(LateralScreens.LoginScreen.route)
+            } else {
+                UserListsScreen(navController)
+            }
         }
         composable(LateralScreens.ExpensesScreen.route) {
             ExpensesScreen()
