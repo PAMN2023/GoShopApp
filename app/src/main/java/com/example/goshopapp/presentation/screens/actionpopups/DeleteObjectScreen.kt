@@ -26,85 +26,101 @@ fun DeleteObjectScreen(deleteItem: Boolean, item: Product, userList: Lists) {
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
     if (deleteItem) {
-        Text(
+        Column(
+            modifier = Modifier
+                .height(100.dp)
+                .width(350.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
             text = "¿Esta seguro de querer\neliminar "+item.name+" de\n la lista "+userList.name+"?",
             color = Color.Black,
             fontWeight = FontWeight.Bold
             )
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    //Evento de cierre
-                },
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(android.graphics.Color.parseColor("#962B00")),
-                    contentColor = Color(android.graphics.Color.parseColor("#962B00"))
-                )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "CANCELAR",
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontWeight = FontWeight.Bold)
-            }
-            Button(
-                onClick = {
-                    storeManager.deleteItemOfUserList(userId!!,userList.name,item.name)
-                },
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(android.graphics.Color.parseColor("#007562")),
-                    contentColor = Color(android.graphics.Color.parseColor("#007562"))
-                )
-            ) {
-                Text(text = "CONFIRMAR",
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = {
+                        //Evento de cierre
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(android.graphics.Color.parseColor("#962B00")),
+                        contentColor = Color(android.graphics.Color.parseColor("#962B00"))
+                    )
+                ) {
+                    Text(text = "CANCELAR",
+                        color = androidx.compose.ui.graphics.Color.White,
+                        fontWeight = FontWeight.Bold)
+                }
+                Button(
+                    onClick = {
+                        storeManager.deleteItemOfUserList(userId!!,userList.name,item.name)
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(android.graphics.Color.parseColor("#007562")),
+                        contentColor = Color(android.graphics.Color.parseColor("#007562"))
+                    )
+                ) {
+                    Text(text = "CONFIRMAR",
+                        color = androidx.compose.ui.graphics.Color.White,
+                        fontWeight = FontWeight.Bold)
+                }
             }
         }
     } else {
-        Text(
-            text = "¿Esta seguro de querer\neliminar la lista " + userList.name + "?",
-            color = Color.Black,
-            fontWeight = FontWeight.Bold
-        )
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .height(100.dp)
+                .width(350.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Button(
-                onClick = {
-                    //Evento de cierre
-                },
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(android.graphics.Color.parseColor("#962B00")),
-                    contentColor = Color(android.graphics.Color.parseColor("#962B00"))
-                )
+            Text(
+                text = "¿Esta seguro de querer\neliminar la lista " + userList.name + "?",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "CANCELAR",
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Button(
-                onClick = {
-                    storeManager.deleteUserList(userId!!,userList.name)
-                },
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(android.graphics.Color.parseColor("#007562")),
-                    contentColor = Color(android.graphics.Color.parseColor("#007562"))
-                )
-            ) {
-                Text(text = "CONFIRMAR",
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = {
+                        //Evento de cierre
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(android.graphics.Color.parseColor("#962B00")),
+                        contentColor = Color(android.graphics.Color.parseColor("#962B00"))
+                    )
+                ) {
+                    Text(
+                        text = "CANCELAR",
+                        color = androidx.compose.ui.graphics.Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Button(
+                    onClick = {
+                        storeManager.deleteUserList(userId!!,userList.name)
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(android.graphics.Color.parseColor("#007562")),
+                        contentColor = Color(android.graphics.Color.parseColor("#007562"))
+                    )
+                ) {
+                    Text(text = "CONFIRMAR",
+                        color = androidx.compose.ui.graphics.Color.White,
+                        fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
