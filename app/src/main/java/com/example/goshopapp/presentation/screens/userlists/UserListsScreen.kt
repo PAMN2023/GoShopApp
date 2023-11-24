@@ -44,10 +44,12 @@ import com.example.goshopapp.domain.model.Lists
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import coil.compose.AsyncImage
+import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun UserListsScreen(navController: NavHostController) {
+fun UserListsScreen(navController: NavHostController, listDetailsViewModel: ListDetailsViewModel) {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
@@ -89,14 +91,19 @@ fun UserListsScreen(navController: NavHostController) {
 
             userLists?.let { lists ->
                 items(lists) { list ->
-                    Log.d("LISTA", list.toString())
                     Row(
                         modifier = Modifier
                             .height(100.dp)
                             .padding(start = 16.dp, end = 16.dp)
                             .fillMaxWidth()
                             .then(Modifier.background(Color(0XFF5FCEBC), RoundedCornerShape(8.dp)))
-                            .clickable {  },
+                            .clickable {
+                                Log.d("LISTA ORIGEN", list.items.toString())
+                                listDetailsViewModel.items.clear()
+                                listDetailsViewModel.items.addAll(list.items)
+                                Log.d("LISTA VIEWMODEL", listDetailsViewModel.items.toString())
+                                navController.navigate(AppScreens.ListDetailsScreen.route)
+                            },
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {

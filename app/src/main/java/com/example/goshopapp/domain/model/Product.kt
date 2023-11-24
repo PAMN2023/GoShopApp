@@ -9,7 +9,7 @@ data class Product(
         fun fromMap(productMap: Map<String, Any>): Product {
             return Product(
                 name = productMap["name"] as String,
-                price = (productMap["price"] as String),
+                price = productMap["price"] as String,
                 image = productMap["image"] as String
             )
         }

@@ -202,6 +202,7 @@ class FirebaseFirestoreManage {
         return fireStore.collection("Usuarios").document(uid).collection("Listas")
     }
 
+
     fun getIterableUserLists(uid: String, callback: UserListsCallback) {
         val userLists: MutableList<Lists> = mutableListOf()
 
@@ -210,10 +211,27 @@ class FirebaseFirestoreManage {
                 Log.e("Error", "Error getting user lists: ${error.message}")
                 return@addSnapshotListener
             }
+
             snapshot?.documents?.forEach { document ->
                 val documentData = document.data
                 if (documentData != null) {
-                    val listData = Lists(documentData["name"].toString(), documentData["shared"] as Boolean, documentData["aproxPrice"].toString(), documentData["image"].toString(), documentData["items"] as MutableList<Product>)
+                    val itemsList = documentData["items"] as? List<Map<String, Any>>
+                    val productList = itemsList?.map { Product.fromMap(it) } ?: emptyList()
+
+                    // Calcular el precio total de la lista de productos
+                    var totalPrice = productList.sumOf { it.price.toDoubleOrNull() ?: 0.0 }
+
+                    val defaultTotalPrice = if (totalPrice == 0.0) 0 else totalPrice.toInt()
+
+                    val listData = Lists(
+                        documentData["name"].toString(),
+                        documentData["shared"] as Boolean,
+                        //documentData["aproxPrice"].toString(),
+                        defaultTotalPrice.toString(),
+                        documentData["image"].toString(),
+                        productList.toMutableList()
+                    )
+
                     userLists.add(listData)
                     callback.onUserListsReceived(userLists)
                 }
@@ -292,3 +310,22 @@ class FirebaseFirestoreManage {
             }
     }
 }
+
+//    fun getIterableUserLists(uid: String, callback: UserListsCallback) {
+//        val userLists: MutableList<Lists> = mutableListOf()
+//
+//        getUserLists(uid).addSnapshotListener { snapshot, error ->
+//            if (error != null) {
+//                Log.e("Error", "Error getting user lists: ${error.message}")
+//                return@addSnapshotListener
+//            }
+//            snapshot?.documents?.forEach { document ->
+//                val documentData = document.data
+//                if (documentData != null) {
+//                    val listData = Lists(documentData["name"].toString(), documentData["shared"] as Boolean, documentData["aproxPrice"].toString(), documentData["image"].toString(), documentData["items"] as MutableList<Product>)
+//                    userLists.add(listData)
+//                    callback.onUserListsReceived(userLists)
+//                }
+//            }
+//        }
+//    }

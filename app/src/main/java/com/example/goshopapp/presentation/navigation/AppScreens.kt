@@ -12,4 +12,5 @@ sealed class AppScreens(
     object ScannerScreen: AppScreens("scanner_screen", "Scanner", R.drawable.ic_bar_code)
     object ProfileScreen: AppScreens("profile_screen", "Profile", R.drawable.ic_profile)
     object ProductDetailsScreen: AppScreens("product_screen")
+    object ListDetailsScreen: AppScreens("list_details_screen")
 }
