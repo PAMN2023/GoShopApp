@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
+import kotlin.math.round
 
 @Composable
 fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
@@ -52,6 +52,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            // TÍTULO E ICONO DE LISTA COMPARTIDA
             item {
                 Box(
                     modifier = Modifier
@@ -90,6 +91,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                 Spacer(modifier = Modifier.height(18.dp))
             }
 
+            // FILA CREADA POR CADA ITEM
             items(items) { product ->
                 Row (
                     modifier = Modifier
@@ -102,6 +104,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // IMAGEN DEL PRODUCTO
                     AsyncImage(
                         model = product.image,
                         modifier = Modifier
@@ -110,7 +113,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                         contentScale = ContentScale.Fit,
                         contentDescription = null
                     )
-
+                    // COLUMNA CON EL NOMBRE, LA CANTIDAD Y EL PRECIO DEL PRODUCTO
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -134,13 +137,13 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                         )
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(
-                            text = "Precio aproximado: " + product.price.toDouble().toInt() + "€",
+                            text = "Precio aproximado: " + round(product.price.toDouble()).toInt() + "€",
                             color = Color(0XFF00B697),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Light
                         )
                     }
-
+                    // BOTÓN DE ELIMINAR PRODUCTO DE LA LISTA
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -164,7 +167,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                     }
                 }
             }
-
+            // BOTÓN DE AÑADIR COMO GASTO LA LISTA
             item {
                 Spacer(modifier = Modifier.height(6.dp))
 

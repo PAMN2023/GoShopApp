@@ -10,7 +10,7 @@ import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.domain.model.User
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
+import kotlin.math.round
 
 class FirebaseFirestoreManage {
 
@@ -220,13 +220,11 @@ class FirebaseFirestoreManage {
 
                     // Calcular el precio total de la lista de productos
                     var totalPrice = productList.sumOf { it.price.toDoubleOrNull() ?: 0.0 }
-
-                    val defaultTotalPrice = if (totalPrice == 0.0) 0 else totalPrice.toInt()
+                    val defaultTotalPrice = if (totalPrice == 0.0) 0 else round(totalPrice).toInt()
 
                     val listData = Lists(
                         documentData["name"].toString(),
                         documentData["shared"] as Boolean,
-                        //documentData["aproxPrice"].toString(),
                         defaultTotalPrice.toString(),
                         documentData["image"].toString(),
                         productList.toMutableList()
@@ -251,9 +249,11 @@ class FirebaseFirestoreManage {
 
                     val sliderProducts = slider.map { sliderMap ->
                         val name = sliderMap["name"] as? String ?: ""
+                        val description = sliderMap["description"] as? String ?: ""
+                        val information = sliderMap["information"] as? String ?: ""
                         val price = sliderMap["price"] as? String ?: ""
                         val image = sliderMap["image"] as? String ?: ""
-                        Product(name, price, image)
+                        Product(name, description, information, price, image)
                     }
 
                     val productsList =
@@ -262,9 +262,11 @@ class FirebaseFirestoreManage {
                     // Mapear los datos de productsList a una lista de Product
                     val products = productsList.map { productMap ->
                         val name = productMap["name"] as? String ?: ""
+                        val description = productMap["description"] as? String ?: ""
+                        val information = productMap["information"] as? String ?: ""
                         val price = productMap["price"] as? String ?: ""
                         val image = productMap["image"] as? String ?: ""
-                        Product(name, price, image)
+                        Product(name, description, information, price, image)
                     }
 
                     val inspirationImage = documentSnapshot.get("inspirationImage") as? String ?: ""
@@ -272,8 +274,6 @@ class FirebaseFirestoreManage {
                     // Crear el objeto HomePageData
                     val homeData = HomePageData(sliderProducts, products, inspirationImage)
                     callback.onHomePageDataReceived(homeData)
-
-                    Log.d("DatosHome", homeData.toString())
                 } else {
                     callback.onHomePageDataError(Exception("El documento no existe"))
 

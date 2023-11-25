@@ -77,6 +77,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            // TÍTULO DE LA VISTA
             item {
                 Text(
                     text = "MIS LISTAS",
@@ -89,6 +90,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
 
             userLists?.let { lists ->
                 items(lists) { list ->
+                    // FILA PARA CADA LISTA
                     Row(
                         modifier = Modifier
                             .height(100.dp)
@@ -105,6 +107,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // IMAGEN DE LA LISTA
                         if (list.image.isNotEmpty()) {
                             AsyncImage(
                                 model = list.image,
@@ -115,6 +118,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                 contentDescription = null
                             )
                         }
+                        // COLUMNA CON NOMBRE Y PRECIO APROXIMADO DE LA LISTA
                         Column(
                             modifier = Modifier
                                 .fillMaxHeight()
@@ -126,17 +130,18 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                             Text(
                                 text = list.name,
                                 color = Color.White,
-                                fontSize = 24.sp,
+                                fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = "Precio aproximado: " + list.aproxPrice + "€",
                                 color = Color.White,
-                                fontSize = 16.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
                             )
                         }
+                        // ICONOS DE LISTA COMPARTIDA Y ELIMINAR LISTA
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()
