@@ -1,5 +1,6 @@
 package com.example.goshopapp.presentation.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,13 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Product
+import com.example.goshopapp.presentation.navigation.AppScreens
+import java.net.URLEncoder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeContent(homeData: HomePageData) {
+fun HomeContent(homeData: HomePageData, navController: NavHostController) {
     val pagerState = rememberPagerState(initialPage = 1) { 3 }
     val sliderList: List<Product> = homeData.slider
     val productsList: List<Product> = homeData.products
@@ -97,7 +102,17 @@ fun HomeContent(homeData: HomePageData) {
                         .shadow(4.dp, shape = RoundedCornerShape(8.dp))
                         .background(Color.White)
                         .padding(16.dp)
-                        .clickable { }
+                        .clickable {
+                            val encodedImageURL = URLEncoder.encode(sliderList[page].image, "UTF-8")
+                            Log.d("URL", encodedImageURL)
+                            navController.navigate(AppScreens.ProductDetailsScreen.route
+                                    + "/${sliderList[page].name}"
+                                    + "/$encodedImageURL"
+                                    + "/${sliderList[page].description}"
+                                    + "/${sliderList[page].information}"
+                                    + "/${sliderList[page].price}"
+                            )
+                        }
                 ) {
                     Text(
                         text = sliderList[page].name,
@@ -197,7 +212,16 @@ fun HomeContent(homeData: HomePageData) {
                             .shadow(4.dp, shape = RoundedCornerShape(8.dp))
                             .background(Color.White)
                             .padding(16.dp)
-                            .clickable { }
+                            .clickable {
+                                val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+                                Log.d("URL", encodedImageURL)
+                                navController.navigate(AppScreens.ProductDetailsScreen.route
+                                        + "/${product.name}"
+                                        + "/$encodedImageURL"
+                                        + "/${product.description}"
+                                        + "/${product.information}"
+                                        + "/${product.price}")
+                            }
                     ) {
                         // IMAGEN
                         if (sliderList.isNotEmpty()) {
@@ -234,10 +258,10 @@ fun HomeContent(homeData: HomePageData) {
                         )
                         // BOTÓN DE AÑADIR PRODUCTO
                         Button(
-                            onClick = { /* accion al pulsar */ },
+                            onClick = {  },
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.size(width = 100.dp, height = 30.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
                         ) {
                             Text(
                                 text = "Añadir"

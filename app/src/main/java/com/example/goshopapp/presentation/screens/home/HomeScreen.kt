@@ -12,12 +12,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.interfaces.HomePageDataCallback
 import com.example.goshopapp.domain.model.HomePageData
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     val firestoreManager = FirebaseFirestoreManage()
     var homeData by remember { mutableStateOf<HomePageData?>(null) }
 
@@ -38,6 +39,6 @@ fun HomeScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ){
-        homeData?.let { HomeContent(it) }
+        homeData?.let { HomeContent(it, navController) }
     }
 }
