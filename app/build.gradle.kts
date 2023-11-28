@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace = "com.example.goshopapp"
-    compileSdk = 34
+    compileSdk = 34 //Aqui va un 34
 
     defaultConfig {
         applicationId = "com.example.goshopapp"
-        minSdk = 24
+        minSdk = 24 // Aqui va un 24
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -39,6 +39,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -80,4 +82,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
     implementation("androidx.compose.ui:ui-util:1.5.4")
+
+    // Dependencias de Zxing
+    implementation("com.google.zxing:core:3.3.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0") {
+        var transitive = false
+    }
 }
