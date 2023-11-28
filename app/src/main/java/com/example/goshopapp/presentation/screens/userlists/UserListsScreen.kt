@@ -57,6 +57,10 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
         authManager.getCurrentUserId()?.let {
             storeManager.getIterableUserLists(it, object : UserListsCallback {
                 override fun onUserListsReceived(data: MutableList<Lists>) {
+                    val favIndex = data.indexOfFirst { it.name == "Favoritos" }
+                    if (favIndex != -1) {
+                        data.removeAt(favIndex)
+                    }
                     userLists = data
                 }
                 override fun onUserDataError(error: Exception) {
