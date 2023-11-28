@@ -40,7 +40,7 @@ fun AppNavigation(
             HomeScreen(navController)
         }
         composable(AppScreens.ScannerScreen.route) {
-            ScannerScreen()
+            ScannerScreen(navController)
         }
         composable(AppScreens.ProfileScreen.route) {
             if (authManager.getCurrentUserId() == null) {

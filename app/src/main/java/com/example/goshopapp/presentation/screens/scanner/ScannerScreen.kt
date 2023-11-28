@@ -28,10 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.google.zxing.integration.android.IntentIntegrator
 
 @Composable
-fun ScannerScreen() {
+fun ScannerScreen(navController: NavHostController) {
     val buttonColor = ComposeColor(android.graphics.Color.parseColor("#007562"))
     val context = LocalContext.current
     var scannedValue by remember { mutableStateOf<String?>(null) }
@@ -64,7 +66,7 @@ fun ScannerScreen() {
 
         // Mostrar el diálogo si showDialog es true
         if (showDialog) {
-            ShowBarcodeDialog(scannedValue ?: "") {
+            ShowBarcodeDialog(scannedValue ?: "", navController) {
                 // Reiniciar el valor escaneado y activar la cámara nuevamente
                 scannedValue = null
                 showDialog = false
@@ -109,7 +111,7 @@ private const val CAMERA_PERMISSION_REQUEST_CODE = 1001
 
 // Mostrar el diálogo con el valor del código de barras
 @Composable
-fun ShowBarcodeDialog(barcodeValue: String, onClose: () -> Unit) {
+fun ShowBarcodeDialog(barcodeValue: String, navController: NavHostController, onClose: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onClose() },
         title = { Text("Código de Barras") },
@@ -118,6 +120,8 @@ fun ShowBarcodeDialog(barcodeValue: String, onClose: () -> Unit) {
             Button(
                 onClick = {
                     onClose()
+                    //Redirección Temporal
+                    navController.navigate(AppScreens.HomeScreen.route)
                 }
             ) {
                 Text("Aceptar")
@@ -126,7 +130,7 @@ fun ShowBarcodeDialog(barcodeValue: String, onClose: () -> Unit) {
     )
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun ScannerScreenPreview() {
     MaterialTheme {
@@ -134,4 +138,4 @@ fun ScannerScreenPreview() {
             ScannerScreen()
         }
     }
-}
+}*/
