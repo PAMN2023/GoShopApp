@@ -1,6 +1,8 @@
 package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
+import android.view.View
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,15 +48,18 @@ fun CreateListScreen() {
         containerColor = Color(android.graphics.Color.parseColor("#D3D3D3")))
     Column(
         modifier = Modifier
-            .height(250.dp)
-            .width(350.dp),
+            .height(350.dp)
+            .width(350.dp)
+            .background(Color(0xeeffffff)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "Creación de una lista de productos",
             color = Color.Black,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp
         )
         Text(text = "NOMBRE DE LA LISTA",
             color = Color(android.graphics.Color.parseColor("#007562")),
@@ -95,9 +100,9 @@ fun CreateListScreen() {
                 .padding(start = 24.dp, end = 24.dp, bottom = 10.dp)
         )
         TextField(
-            value = listName.value,
+            value = listImg.value,
             onValueChange = { newValue ->
-                listName.value = newValue
+                listImg.value = newValue
             },
             modifier = Modifier
                 .fillMaxWidth()

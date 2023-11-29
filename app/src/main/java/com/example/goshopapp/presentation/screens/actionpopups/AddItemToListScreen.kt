@@ -2,6 +2,7 @@ package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,10 @@ fun AddItemToListScreen(product: Product) {
         userId?.let {
             storeManager.getIterableUserLists(it, object : UserListsCallback {
                 override fun onUserListsReceived(data: MutableList<Lists>) {
+                    val favIndex = data.indexOfFirst { it.name == "Favoritos" }
+                    if (favIndex != -1) {
+                        data.removeAt(favIndex)
+                    }
                     userLists = data
                 }
                 override fun onUserDataError(error: Exception) {
@@ -58,8 +63,9 @@ fun AddItemToListScreen(product: Product) {
 
     Column(
         modifier = Modifier
-            .height(350.dp)
-            .width(100.dp),
+            .height(500.dp)
+            .width(250.dp)
+            .background(Color(0xeeffffff)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -77,11 +83,11 @@ fun AddItemToListScreen(product: Product) {
                             storeManager.addItemToUserList(userId!!,list.name,product)
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(android.graphics.Color.parseColor("#962B00")),
-                            contentColor = Color(android.graphics.Color.parseColor("#962B00"))
+                            containerColor = Color(android.graphics.Color.parseColor("#007562")),
+                            contentColor = Color(android.graphics.Color.parseColor("#007562"))
                         )
                     ) {
-                        Text(text = list.name, color = Color(0xFF007562), fontWeight = FontWeight.Bold)
+                        Text(text = list.name, color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }

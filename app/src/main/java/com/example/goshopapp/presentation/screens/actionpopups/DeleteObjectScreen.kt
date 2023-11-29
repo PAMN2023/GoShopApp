@@ -1,6 +1,7 @@
 package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +26,7 @@ import com.example.goshopapp.domain.model.Product
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun DeleteObjectScreen(deleteItem: Boolean, item: Product, userList: Lists) {
+fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = null) {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
@@ -33,12 +34,13 @@ fun DeleteObjectScreen(deleteItem: Boolean, item: Product, userList: Lists) {
         Column(
             modifier = Modifier
                 .height(100.dp)
-                .width(350.dp),
+                .width(350.dp)
+                .background(Color(0x80000000)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-            text = "¿Esta seguro de querer\neliminar "+item.name+" de\n la lista "+userList.name+"?",
+            text = "¿Esta seguro de querer\neliminar "+item!!.name+" de\n la lista "+userList.name+"?",
             color = Color.Black,
             fontWeight = FontWeight.Bold
             )
@@ -81,7 +83,8 @@ fun DeleteObjectScreen(deleteItem: Boolean, item: Product, userList: Lists) {
         Column(
             modifier = Modifier
                 .height(100.dp)
-                .width(350.dp),
+                .width(350.dp)
+                .background(Color(0x80000000)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -135,6 +138,5 @@ fun DeleteObjectScreen(deleteItem: Boolean, item: Product, userList: Lists) {
 fun DeleteObjectPreviw() {
     val almendras = Product("Almendras", "0.5", "")
     DeleteObjectScreen(true,
-        almendras,
-        Lists("Prueba",false,"0.5","", mutableListOf(almendras)))
+        Lists("Prueba",false,"0.5","", mutableListOf(almendras)),almendras)
 }
