@@ -25,6 +25,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -34,6 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.goshopapp.domain.model.Lists
+import com.example.goshopapp.domain.model.Product
+import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
 import kotlin.math.round
 
@@ -41,7 +48,11 @@ import kotlin.math.round
 fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
 
     val items = listDetailsViewModel.items
-
+    var isDeletePopupVisible by remember { mutableStateOf(false) }
+    var item by remember {mutableStateOf<Product?>(null)}
+    fun toggleDeletePopupVisibility() {
+        isDeletePopupVisible = !isDeletePopupVisible
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,6 +115,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    item = product
                     // IMAGEN DEL PRODUCTO
                     AsyncImage(
                         model = product.image,
@@ -191,5 +203,11 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                 }
             }
         }
+    }
+    if (isDeletePopupVisible) {
+        DeleteObjectScreen(false,
+            Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items),
+            item
+        )
     }
 }

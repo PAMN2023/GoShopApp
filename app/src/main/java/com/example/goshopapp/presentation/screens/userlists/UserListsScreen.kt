@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -41,9 +42,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SupervisorAccount
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.screens.actionpopups.CreateListScreen
+import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
 
 @SuppressLint("MutableCollectionMutableState")
@@ -52,11 +57,23 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
-
+    var isCreatePopupVisible by remember { mutableStateOf(false) }
+    var userList by remember { mutableStateOf<Lists?>(null) }
+    fun toggleCreatePopupVisibility() {
+        isCreatePopupVisible = !isCreatePopupVisible
+    }
+    var isDeletePopupVisible by remember { mutableStateOf(false) }
+    fun toggleDeletePopupVisibility() {
+        isDeletePopupVisible = !isDeletePopupVisible
+    }
     DisposableEffect(Unit) {
         authManager.getCurrentUserId()?.let {
             storeManager.getIterableUserLists(it, object : UserListsCallback {
                 override fun onUserListsReceived(data: MutableList<Lists>) {
+                    val favIndex = data.indexOfFirst { it.name == "Favoritos" }
+                    if (favIndex != -1) {
+                        data.removeAt(favIndex)
+                    }
                     userLists = data
                 }
                 override fun onUserDataError(error: Exception) {
@@ -108,6 +125,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         // IMAGEN DE LA LISTA
+                        userList = list
                         if (list.image.isNotEmpty()) {
                             AsyncImage(
                                 model = list.image,
@@ -203,6 +221,26 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                 }
             }
         }
+        Button (
+            onClick = { toggleCreatePopupVisibility() },
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+            modifier = Modifier.size(width = 200.dp, height = 50.dp)
+        ) {
+            Text(
+                text = "CREAR LISTA",
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    fontSize = 16.sp
+                )
+            )
+        }
+    }
+    if (isCreatePopupVisible) {
+        CreateListScreen()
+    }
+    if (isDeletePopupVisible) {
+        DeleteObjectScreen(false, userList!!)
     }
 }
 
