@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -93,7 +94,7 @@ fun CreateListScreen(): Boolean {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
-        Text(text = "IMÁGEN DE LA LISTA",
+        Text(text = "IMAGEN DE LA LISTA",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
@@ -112,7 +113,7 @@ fun CreateListScreen(): Boolean {
                 .padding(start = 24.dp, end = 24.dp),
             placeholder = {
                 Text(
-                    text = "Introduce la url de la imágen de la lista",
+                    text = "Introduce la url de la imagen de la lista",
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(start = 1.dp)
@@ -124,7 +125,7 @@ fun CreateListScreen(): Boolean {
         )
         Row(
             modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
@@ -141,9 +142,11 @@ fun CreateListScreen(): Boolean {
                     color = Color.White,
                     fontWeight = FontWeight.Bold)
             }
+            Spacer(modifier = Modifier.width(24.dp))
             Button(
                 onClick = {
                     storeManager.createUserList(userId!!, listName.value, listImg.value)
+                    result = false
                 },
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(

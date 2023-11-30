@@ -84,6 +84,7 @@ fun AddItemToListScreen(product: Product): Boolean {
                     Button(
                         onClick = {
                             storeManager.addItemToUserList(userId!!,list.name,product)
+                            result = false
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(android.graphics.Color.parseColor("#007562")),

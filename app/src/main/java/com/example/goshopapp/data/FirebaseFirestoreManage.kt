@@ -56,35 +56,14 @@ class FirebaseFirestoreManage {
      * @return A `Boolean` value indicating whether the list was successfully created
      */
     fun createUserList(uid: String, listName: String, img: String): Boolean {
-        if (checkListExist(uid, listName)) {
-            return false
-            Log.d("Error", "Ya existe una lista con este nombre")
-        }
         var response = false
         val items: MutableList<Product> = mutableListOf()
         val listData = Lists(listName, false, "0", img, items).toMap()
-        fireStore.collection("Usuarios").document(uid).collection("Listas").add(listData)
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
             .addOnSuccessListener{
                 response = true
             }
         return response
-    }
-
-    /**
-     * Checks if a list with the name 'listName' exists on the Data Base
-     * 
-     * @param uid 'String' with the unique identifier of the user
-     * @param listName 'String' with the name of the list to create
-     * @return A `Boolean` value indicating if the list exists or not
-     */
-    private fun checkListExist(uid: String, listName: String): Boolean {
-        val lists = getUserLists(uid)
-        var res = false
-        lists.whereEqualTo("name", listName).get()
-            .addOnSuccessListener{
-                res = true
-            }
-        return res
     }
 
     /**
@@ -96,8 +75,7 @@ class FirebaseFirestoreManage {
      */
     fun deleteUserList(uid: String, listName: String): Boolean {
         var response = false
-        val listId = getUserListIdByName(uid, listName)
-        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).delete()
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).delete()
             .addOnSuccessListener{
                 response = true
             }
@@ -114,12 +92,11 @@ class FirebaseFirestoreManage {
      */
     fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
         var response = false
-        val listId = getUserListIdByName(uid, listName)
-        val userList = getUserListById(uid, listId)
+        val userList = getUserListById(uid, listName)
         userList?.items?.add(item)
         val listData = userList?.let { Lists(listName, userList.shared, userList.aproxPrice, userList.image, it.items).toMap() }
         if (listData != null) {
-            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
+            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
                 .addOnSuccessListener{
                     response = true
                 }
@@ -137,8 +114,7 @@ class FirebaseFirestoreManage {
      */
     fun deleteItemOfUserList(uid: String, listName: String, itemName: String): Boolean {
         var response = false
-        val listId = getUserListIdByName(uid, listName)
-        val userList = getUserListById(uid, listId)
+        val userList = getUserListById(uid, listName)
         userList?.items?.forEach{
             if (it.name == itemName) {
                 userList.items.remove(it)
@@ -147,7 +123,7 @@ class FirebaseFirestoreManage {
         }
         val listData = userList?.let { Lists(listName, it.shared, userList.aproxPrice, userList.image, userList.items).toMap() }
         if (listData != null) {
-            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).set(listData)
+            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
                 .addOnSuccessListener{
                     response = true
                 }
@@ -174,25 +150,6 @@ class FirebaseFirestoreManage {
     }
 
     /**
-     * Retrieves the ID of a list within the user's `Listas` sub-collection based on the provided list name.
-     *
-     * @param uid 'String' with the unique identifier of the user
-     * @param listName 'String' with the name of the list to find
-     * @return a 'String' with the ID of the list, or an empty 'String' if not found
-     */
-    private fun getUserListIdByName(uid: String, listName: String): String {
-        val lists = getUserLists(uid)
-        var listId = ""
-        lists.whereEqualTo("name", listName).get()
-            .addOnSuccessListener { documentSnapshots ->
-                listId = documentSnapshots.documents[0].id
-            }.addOnFailureListener {
-                Log.e("Error", "Failed to get list ID: ${it.message}")
-            }
-        return listId
-    }
-
-    /**
      * Retrieves a reference to the `Listas` sub-collection within the user document in Firestore.
      *
      * @param uid a 'String' representing the unique identifier of the user
@@ -202,7 +159,12 @@ class FirebaseFirestoreManage {
         return fireStore.collection("Usuarios").document(uid).collection("Listas")
     }
 
-
+    /**
+     * Retrives an iterable of the user lists
+     *
+     * @param uid unique id of the user
+     * @param callback The callback to obtain the iterable user lists
+     */
     fun getIterableUserLists(uid: String, callback: UserListsCallback) {
         val userLists: MutableList<Lists> = mutableListOf()
 
