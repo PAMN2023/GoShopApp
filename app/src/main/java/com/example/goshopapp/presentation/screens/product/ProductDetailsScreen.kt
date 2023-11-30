@@ -181,6 +181,6 @@ fun ProductDetailsScreen(
         }
     }
     if (isPopupVisible) {
-        AddItemToListScreen(Product(productName!!,productDescription!!,productInformation!!,productPrice!!,productImage!!))
+        isPopupVisible = AddItemToListScreen(Product(productName!!,productDescription!!,productInformation!!,productPrice!!,productImage!!))
     }
 }

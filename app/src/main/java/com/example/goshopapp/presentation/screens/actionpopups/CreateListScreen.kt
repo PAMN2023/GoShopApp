@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +38,13 @@ import com.example.goshopapp.data.FirebaseFirestoreManage
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun CreateListScreen() {
+fun CreateListScreen(): Boolean {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
     val listName = remember { mutableStateOf("") }
     val listImg = remember { mutableStateOf("") }
+    var result by remember { mutableStateOf(true) }
     val textFieldsColors = TextFieldDefaults.textFieldColors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
@@ -50,7 +54,7 @@ fun CreateListScreen() {
         modifier = Modifier
             .height(350.dp)
             .width(350.dp)
-            .background(Color(0xeeffffff)),
+            .background(Color(0xefffffff)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -90,7 +94,7 @@ fun CreateListScreen() {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
-        Text(text = "IMÁGEN DE LA LISTA",
+        Text(text = "IMAGEN DE LA LISTA",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
@@ -109,7 +113,7 @@ fun CreateListScreen() {
                 .padding(start = 24.dp, end = 24.dp),
             placeholder = {
                 Text(
-                    text = "Introduce la url de la imágen de la lista",
+                    text = "Introduce la url de la imagen de la lista",
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(start = 1.dp)
@@ -121,12 +125,12 @@ fun CreateListScreen() {
         )
         Row(
             modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
                 onClick = {
-                    //Evento de cierre
+                    result = false
                 },
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
@@ -138,9 +142,11 @@ fun CreateListScreen() {
                     color = Color.White,
                     fontWeight = FontWeight.Bold)
             }
+            Spacer(modifier = Modifier.width(24.dp))
             Button(
                 onClick = {
                     storeManager.createUserList(userId!!, listName.value, listImg.value)
+                    result = false
                 },
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
@@ -154,6 +160,7 @@ fun CreateListScreen() {
             }
         }
     }
+    return result
 }
 
 @Preview(showBackground = true)

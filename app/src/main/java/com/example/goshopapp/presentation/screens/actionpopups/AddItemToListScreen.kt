@@ -2,7 +2,9 @@ package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,12 +39,12 @@ import com.example.goshopapp.domain.model.Product
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun AddItemToListScreen(product: Product) {
+fun AddItemToListScreen(product: Product): Boolean {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
-
+    var result by remember { mutableStateOf(true) }
     DisposableEffect(Unit) {
         userId?.let {
             storeManager.getIterableUserLists(it, object : UserListsCallback {
@@ -63,9 +65,10 @@ fun AddItemToListScreen(product: Product) {
 
     Column(
         modifier = Modifier
-            .height(500.dp)
+            .height(450.dp)
             .width(250.dp)
-            .background(Color(0xeeffffff)),
+            .background(Color(0xefffffff))
+            .border(border = BorderStroke(10.dp, Color.Transparent),shape = MaterialTheme.shapes.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -81,6 +84,7 @@ fun AddItemToListScreen(product: Product) {
                     Button(
                         onClick = {
                             storeManager.addItemToUserList(userId!!,list.name,product)
+                            result = false
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(android.graphics.Color.parseColor("#007562")),
@@ -91,28 +95,31 @@ fun AddItemToListScreen(product: Product) {
                     }
                 }
             }
-        }
-        Row (
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    //Evento de cierre
-                },
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(android.graphics.Color.parseColor("#962B00")),
-                    contentColor = Color(android.graphics.Color.parseColor("#962B00"))
-                )
-            ) {
-                Text(text = "CANCELAR",
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontWeight = FontWeight.Bold)
+            item {
+                Row (
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = {
+                            result = false
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(android.graphics.Color.parseColor("#962B00")),
+                            contentColor = Color(android.graphics.Color.parseColor("#962B00"))
+                        )
+                    ) {
+                        Text(text = "CANCELAR",
+                            color = androidx.compose.ui.graphics.Color.White,
+                            fontWeight = FontWeight.Bold)
+                    }
+                }
             }
         }
     }
+    return result
 }
 
 @Preview(showBackground = true)
