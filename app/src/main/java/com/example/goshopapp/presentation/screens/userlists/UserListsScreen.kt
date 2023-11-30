@@ -220,21 +220,24 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
+            item {
+                Button (
+                    onClick = { toggleCreatePopupVisibility() },
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+                    modifier = Modifier.size(width = 200.dp, height = 50.dp)
+                ) {
+                    Text(
+                        text = "CREAR LISTA",
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+            }
         }
-        Button (
-            onClick = { toggleCreatePopupVisibility() },
-            shape = RoundedCornerShape(12.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-            modifier = Modifier.size(width = 200.dp, height = 50.dp)
-        ) {
-            Text(
-                text = "CREAR LISTA",
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-        }
+
     }
     if (isCreatePopupVisible) {
         CreateListScreen()

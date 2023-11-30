@@ -181,24 +181,26 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
             }
             // BOTÓN DE AÑADIR COMO GASTO LA LISTA
             item {
-                Spacer(modifier = Modifier.height(6.dp))
+                if (listDetailsViewModel.listName != "Favoritos") {
+                    Spacer(modifier = Modifier.height(6.dp))
 
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        onClick = { /* accion al pulsar */ },
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.size(width = 250.dp, height = 50.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "AÑADIR COMO GASTO"
-                        )
+                        Button(
+                            onClick = { /* accion al pulsar */ },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.size(width = 250.dp, height = 50.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Text(
+                                text = "AÑADIR COMO GASTO"
+                            )
+                        }
                     }
                 }
             }
