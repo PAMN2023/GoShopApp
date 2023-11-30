@@ -19,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +37,13 @@ import com.example.goshopapp.data.FirebaseFirestoreManage
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun CreateListScreen() {
+fun CreateListScreen(): Boolean {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
     val listName = remember { mutableStateOf("") }
     val listImg = remember { mutableStateOf("") }
+    var result by remember { mutableStateOf(true) }
     val textFieldsColors = TextFieldDefaults.textFieldColors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
@@ -50,7 +53,7 @@ fun CreateListScreen() {
         modifier = Modifier
             .height(350.dp)
             .width(350.dp)
-            .background(Color(0xeeffffff)),
+            .background(Color(0xefffffff)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -126,7 +129,7 @@ fun CreateListScreen() {
         ) {
             Button(
                 onClick = {
-                    //Evento de cierre
+                    result = false
                 },
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
@@ -154,6 +157,7 @@ fun CreateListScreen() {
             }
         }
     }
+    return result
 }
 
 @Preview(showBackground = true)

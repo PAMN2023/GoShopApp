@@ -195,7 +195,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                         modifier = Modifier
                                             .padding(bottom = 8.dp)
                                             .size(35.dp, 35.dp)
-                                            .clickable { }
+                                            .clickable { toggleDeletePopupVisibility() }
                                     )
                                 }
                             } else {
@@ -211,7 +211,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                         contentDescription = "Delete Product Icon",
                                         modifier = Modifier
                                             .size(35.dp, 35.dp)
-                                            .clickable { }
+                                            .clickable { toggleDeletePopupVisibility() }
                                     )
                                 }
                             }
@@ -220,27 +220,29 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-        }
-        Button (
-            onClick = { toggleCreatePopupVisibility() },
-            shape = RoundedCornerShape(12.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-            modifier = Modifier.size(width = 200.dp, height = 50.dp)
-        ) {
-            Text(
-                text = "CREAR LISTA",
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
+            item {
+                Button (
+                    onClick = { toggleCreatePopupVisibility() },
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+                    modifier = Modifier.size(width = 200.dp, height = 50.dp)
+                ) {
+                    Text(
+                        text = "CREAR LISTA",
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+            }
         }
     }
     if (isCreatePopupVisible) {
-        CreateListScreen()
+        isCreatePopupVisible = CreateListScreen()
     }
     if (isDeletePopupVisible) {
-        DeleteObjectScreen(false, userList!!)
+        isDeletePopupVisible = DeleteObjectScreen(false, userList!!)
     }
 }
 

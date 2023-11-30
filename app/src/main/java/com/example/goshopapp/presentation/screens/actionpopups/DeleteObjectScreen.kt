@@ -13,6 +13,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,16 +30,17 @@ import com.example.goshopapp.domain.model.Product
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = null) {
+fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = null): Boolean {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
+    var result by remember { mutableStateOf(true) }
     if (deleteItem) {
         Column(
             modifier = Modifier
                 .height(100.dp)
                 .width(350.dp)
-                .background(Color(0x80000000)),
+                .background(Color(0xefffffff)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -100,7 +105,7 @@ fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = nu
             ) {
                 Button(
                     onClick = {
-                        //Evento de cierre
+                        result = false
                     },
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
@@ -131,6 +136,7 @@ fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = nu
             }
         }
     }
+    return result
 }
 
 @Preview(showBackground = true)
