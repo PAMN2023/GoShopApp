@@ -25,6 +25,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +46,7 @@ import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.screens.actionpopups.AddItemToListScreen
 import java.net.URLEncoder
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -51,7 +56,11 @@ fun HomeContent(homeData: HomePageData, navController: NavHostController) {
     val sliderList: List<Product> = homeData.slider
     val productsList: List<Product> = homeData.products
     val inspirationImage: String = homeData.inspiration
-
+    var isPopupVisible by remember { mutableStateOf(false) }
+    var productItem by remember {mutableStateOf<Product?>(null)}
+    fun togglePopupVisibility() {
+        isPopupVisible = !isPopupVisible
+    }
     // LAZY COLUMN PARA HACER SCROLL DE TODO EL CONTENIDO
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -257,7 +266,9 @@ fun HomeContent(homeData: HomePageData, navController: NavHostController) {
                         )
                         // BOTÓN DE AÑADIR PRODUCTO
                         Button(
-                            onClick = {  },
+                            onClick = { togglePopupVisibility()
+                                        productItem = product
+                                        },
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.size(width = 100.dp, height = 30.dp),
                             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
@@ -329,6 +340,20 @@ fun HomeContent(homeData: HomePageData, navController: NavHostController) {
                         fontWeight = FontWeight.ExtraBold
                     )
                 )
+            }
+        }
+    }
+    if (isPopupVisible) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isPopupVisible = AddItemToListScreen(Product(productItem!!.name, productItem!!.description, productItem!!.information, productItem!!.price, productItem!!.image))
             }
         }
     }

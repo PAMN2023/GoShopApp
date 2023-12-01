@@ -78,7 +78,7 @@ fun AddItemToListScreen(product: Product): Boolean {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
-            modifier = Modifier.padding(top = 20.dp))
+            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -97,7 +97,7 @@ fun AddItemToListScreen(product: Product): Boolean {
                             containerColor = Color(android.graphics.Color.parseColor("#007562")),
                             contentColor = Color(android.graphics.Color.parseColor("#007562"))
                         ),
-                        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
+                        modifier = Modifier.padding(bottom = 10.dp)
                     ) {
                         Text(text = list.name, color = Color.White, fontWeight = FontWeight.Bold)
                     }
@@ -105,7 +105,7 @@ fun AddItemToListScreen(product: Product): Boolean {
             }
             item {
                     Row (
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().padding(top = 20.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.Bottom
                     ) {
