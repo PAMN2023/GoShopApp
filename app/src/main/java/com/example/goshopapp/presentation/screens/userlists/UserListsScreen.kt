@@ -237,6 +237,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                 }
             }
         }
+
     }
     if (isCreatePopupVisible) {
         isCreatePopupVisible = CreateListScreen()

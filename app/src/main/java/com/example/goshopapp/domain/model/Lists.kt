@@ -7,6 +7,8 @@ data class Lists(
     val image: String,
     val items: MutableList<Product> = mutableListOf()
 ) {
+    constructor() : this("", false, "", "", mutableListOf())
+
     fun toMap(): MutableMap<String, Any?> {
         return mutableMapOf(
             "name" to this.name,

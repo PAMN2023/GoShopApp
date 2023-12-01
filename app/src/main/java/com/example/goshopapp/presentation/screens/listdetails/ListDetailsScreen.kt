@@ -173,7 +173,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                                 modifier = Modifier
                                     .background(Color.White)
                                     .size(35.dp, 35.dp)
-                                    .clickable { }
+                                    .clickable { toggleDeletePopupVisibility() }
                             )
                         }
                     }
@@ -205,7 +205,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
         }
     }
     if (isDeletePopupVisible) {
-        DeleteObjectScreen(false,
+        DeleteObjectScreen(true,
             Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items),
             item
         )

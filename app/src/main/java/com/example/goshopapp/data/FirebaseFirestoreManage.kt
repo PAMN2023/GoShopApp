@@ -1,15 +1,19 @@
 package com.example.goshopapp.data
 
 import android.util.Log
+import com.example.goshopapp.domain.interfaces.FavItemCallback
 import com.example.goshopapp.domain.interfaces.HomePageDataCallback
 import com.example.goshopapp.domain.interfaces.UserDataCallback
+import com.example.goshopapp.domain.interfaces.UserIndividualListCallback
 import com.example.goshopapp.domain.interfaces.UserListsCallback
 import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.domain.model.User
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlin.math.round
 
 class FirebaseFirestoreManage {
@@ -82,71 +86,112 @@ class FirebaseFirestoreManage {
         return response
     }
 
-    /**
-     * Adds new items to a specific list within the user's `Listas` sub-collection.
-     *
-     * @param uid 'String' with the unique identifier of the user
-     * @param listName 'String' with the name of the list to add items to
-     * @param item A `Product` representing the item to add
-     * @return A `Boolean` value indicating whether the items were successfully added
-     */
-    fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
-        var response = false
-        val userList = getUserListById(uid, listName)
-        userList?.items?.add(item)
-        val listData = userList?.let { Lists(listName, userList.shared, userList.aproxPrice, userList.image, it.items).toMap() }
-        if (listData != null) {
-            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
-                .addOnSuccessListener{
-                    response = true
-                }
-        }
-        return response
-    }
-
-    /**
-     * Removes an item from a specific list within the user's `Listas` sub-collection.
-     *
-     * @param uid 'String' with the unique identifier of the user
-     * @param listName 'String' with the name of the list to remove the item from
-     * @param itemName 'String' with the name of the item to delete
-     * @return 'Boolean' that indicates the result of the firestore replay
-     */
-    fun deleteItemOfUserList(uid: String, listName: String, itemName: String): Boolean {
-        var response = false
-        val userList = getUserListById(uid, listName)
-        userList?.items?.forEach{
-            if (it.name == itemName) {
-                userList.items.remove(it)
-                Log.d("Deletion", "Item with name '$itemName' removed")
-            }
-        }
-        val listData = userList?.let { Lists(listName, it.shared, userList.aproxPrice, userList.image, userList.items).toMap() }
-        if (listData != null) {
-            fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
-                .addOnSuccessListener{
-                    response = true
-                }
-        }
-        return response
-    }
-
-    /**
-     * Obtains a list by the id of the firestore document id
-     *
-     * @param uid 'String' with the unique identifier of the user
-     * @param listId 'String' with the id of the list to return
-     * @return A `Lists` object with the data of the document on firestore
-     */
-    private fun getUserListById(uid: String, listId: String): Lists? {
-        var userList: Lists? = null
+    /* NUEVO - FALTA DOCUMENTAR */
+    fun isItemInFavourites(uid: String, listId: String, itemName: String, callback: FavItemCallback) {
         fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    userList = documentSnapshot.toObject(Lists::class.java)!!
+                    val userList = documentSnapshot.toObject(Lists::class.java)
+                    userList?.let {
+                        val items = it.items
+
+                        // Verificar si el nombre del producto está en la lista
+                        val isItemInList = items.any { item -> item.name == itemName }
+
+                        callback.onItemFavReceived(isItemInList)
+                    }
+                } else {
+                    // La lista no existe
+                    callback.onItemFavReceived(false)
                 }
             }
-        return userList
+            .addOnFailureListener {
+                // Manejar errores
+                callback.onItemFavReceived(false)
+            }
+    }
+
+    /* NUEVO - FALTA DOCUMENTAR */
+    private fun getUserListById(uid: String, listId: String, callback: UserIndividualListCallback) {
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val userList = if (documentSnapshot.exists()) {
+                    documentSnapshot.toObject(Lists::class.java)
+                } else {
+                    null
+                }
+                callback.onUserListLoaded(userList)
+            }
+            .addOnFailureListener { exception ->
+                // Manejar errores, si es necesario
+                Log.e("ERROR", "Error getting user list", exception)
+                callback.onUserListLoaded(null)
+            }
+    }
+
+    /* NUEVO - FALTA DOCUMENTAR */
+    fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
+        var response = false
+
+        getUserListById(uid, listName, object : UserIndividualListCallback {
+            override fun onUserListLoaded(userList: Lists?) {
+                if (userList != null) {
+                    // Modificar la lista con el nuevo ítem
+                    userList.items.add(item)
+
+                    // Actualizar la lista en Firestore
+                    val listData = Lists(listName, userList.shared, userList.aproxPrice, userList.image, userList.items).toMap()
+
+                    fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName)
+                        .set(listData)
+                        .addOnSuccessListener {
+                            response = true
+                        }
+                        .addOnFailureListener { exception ->
+                            // Manejar errores, si es necesario
+                            Log.e("ERROR", "Error updating user list", exception)
+                        }
+                }
+            }
+        })
+
+        return response
+    }
+
+    /* NUEVO - FALTA DOCUMENTAR */
+    fun deleteItemOfUserList(uid: String, listName: String, itemName: String): Boolean {
+        var response = false
+
+        getUserListById(uid, listName, object : UserIndividualListCallback {
+            override fun onUserListLoaded(userList: Lists?) {
+                if (userList != null) {
+
+                    val iterator = userList.items.iterator()
+                    while (iterator.hasNext()) {
+                        val item = iterator.next()
+                        if (item.name == itemName) {
+                            iterator.remove()
+                            Log.d("Deletion", "Item with name '$itemName' removed")
+                        }
+                    }
+
+                    // Actualizar la lista en Firestore
+                    val listData = Lists(listName, userList.shared, userList.aproxPrice, userList.image, userList.items).toMap()
+
+                    fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName)
+                        .set(listData)
+                        .addOnSuccessListener {
+                            response = true
+                        }
+                        .addOnFailureListener { exception ->
+                            // Manejar errores, si es necesario
+                            Log.e("ERROR", "Error updating user list", exception)
+                        }
+                }
+            }
+        })
+
+        return response
     }
 
     /**
@@ -291,3 +336,73 @@ class FirebaseFirestoreManage {
 //            }
 //        }
 //    }
+
+
+/**
+ * Adds new items to a specific list within the user's `Listas` sub-collection.
+ *
+ * @param uid 'String' with the unique identifier of the user
+ * @param listName 'String' with the name of the list to add items to
+ * @param item A `Product` representing the item to add
+ * @return A `Boolean` value indicating whether the items were successfully added
+ */
+/*fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
+    var response = false
+    val userList = getUserListById(uid, listName)
+    Log.d("USER LIST", userList.toString())
+    userList?.items?.add(item)
+    val listData = userList?.let { Lists(listName, userList.shared, userList.aproxPrice, userList.image, it.items).toMap() }
+    if (listData != null) {
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
+            .addOnSuccessListener{
+                response = true
+            }
+    }
+    return response
+}*/
+
+/**
+ * Removes an item from a specific list within the user's `Listas` sub-collection.
+ *
+ * @param uid 'String' with the unique identifier of the user
+ * @param listName 'String' with the name of the list to remove the item from
+ * @param itemName 'String' with the name of the item to delete
+ * @return 'Boolean' that indicates the result of the firestore replay
+ */
+/*fun deleteItemOfUserList(uid: String, listName: String, itemName: String): Boolean {
+    var response = false
+    val userList = getUserListByIdd(uid, listName)
+    userList?.items?.forEach{
+        if (it.name == itemName) {
+            userList.items.remove(it)
+            Log.d("Deletion", "Item with name '$itemName' removed")
+        }
+    }
+    val listData = userList?.let { Lists(listName, it.shared, userList.aproxPrice, userList.image, userList.items).toMap() }
+    if (listData != null) {
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listName).set(listData)
+            .addOnSuccessListener{
+                response = true
+            }
+    }
+    return response
+}*/
+
+/**
+ * Obtains a list by the id of the firestore document id
+ *
+ * @param uid 'String' with the unique identifier of the user
+ * @param listId 'String' with the id of the list to return
+ * @return A `Lists` object with the data of the document on firestore
+ */
+/*private fun getUserListById(uid: String, listId: String): Lists? {
+    var userList: Lists? = null
+    fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).get()
+        .addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                userList = documentSnapshot.toObject(Lists::class.java)!!
+                Log.d("EYEYEY", userList.toString())
+            }
+        }
+    return userList
+}*/
