@@ -52,11 +52,12 @@ fun FavouritesScreen(navController: NavHostController) {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
-
+    var favIndex by remember { mutableStateOf<Int>(0) }
     DisposableEffect(Unit) {
         authManager.getCurrentUserId()?.let {
             storeManager.getIterableUserLists(it, object : UserListsCallback {
                 override fun onUserListsReceived(data: MutableList<Lists>) {
+                    favIndex = data.indexOfFirst { it.name == "Favoritos" }
                     userLists = data
                 }
                 override fun onUserDataError(error: Exception) {
@@ -67,7 +68,7 @@ fun FavouritesScreen(navController: NavHostController) {
         onDispose { }
     }
 
-    val firstList: Lists? = userLists?.firstOrNull()
+    val firstList: Lists? = userLists?.get(favIndex)
 
     Column(
         modifier = Modifier.fillMaxSize(),
