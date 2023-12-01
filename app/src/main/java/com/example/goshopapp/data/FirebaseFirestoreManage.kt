@@ -1,6 +1,7 @@
 package com.example.goshopapp.data
 
 import android.util.Log
+import com.example.goshopapp.domain.interfaces.FavItemCallback
 import com.example.goshopapp.domain.interfaces.HomePageDataCallback
 import com.example.goshopapp.domain.interfaces.UserDataCallback
 import com.example.goshopapp.domain.interfaces.UserIndividualListCallback
@@ -85,6 +86,32 @@ class FirebaseFirestoreManage {
         return response
     }
 
+    /* NUEVO - FALTA DOCUMENTAR */
+    fun isItemInFavourites(uid: String, listId: String, itemName: String, callback: FavItemCallback) {
+        fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val userList = documentSnapshot.toObject(Lists::class.java)
+                    userList?.let {
+                        val items = it.items
+
+                        // Verificar si el nombre del producto está en la lista
+                        val isItemInList = items.any { item -> item.name == itemName }
+
+                        callback.onItemFavReceived(isItemInList)
+                    }
+                } else {
+                    // La lista no existe
+                    callback.onItemFavReceived(false)
+                }
+            }
+            .addOnFailureListener {
+                // Manejar errores
+                callback.onItemFavReceived(false)
+            }
+    }
+
+    /* NUEVO - FALTA DOCUMENTAR */
     private fun getUserListById(uid: String, listId: String, callback: UserIndividualListCallback) {
         fireStore.collection("Usuarios").document(uid).collection("Listas").document(listId).get()
             .addOnSuccessListener { documentSnapshot ->
@@ -102,15 +129,14 @@ class FirebaseFirestoreManage {
             }
     }
 
+    /* NUEVO - FALTA DOCUMENTAR */
     fun addItemToUserList(uid: String, listName: String, item: Product): Boolean {
         var response = false
 
-        // Llamada asíncrona para obtener la lista del usuario
         getUserListById(uid, listName, object : UserIndividualListCallback {
             override fun onUserListLoaded(userList: Lists?) {
                 if (userList != null) {
                     // Modificar la lista con el nuevo ítem
-                    Log.d("PAOOOOOO", userList.toString())
                     userList.items.add(item)
 
                     // Actualizar la lista en Firestore
@@ -132,17 +158,19 @@ class FirebaseFirestoreManage {
         return response
     }
 
+    /* NUEVO - FALTA DOCUMENTAR */
     fun deleteItemOfUserList(uid: String, listName: String, itemName: String): Boolean {
         var response = false
 
-        // Llamada asíncrona para obtener la lista del usuario
         getUserListById(uid, listName, object : UserIndividualListCallback {
             override fun onUserListLoaded(userList: Lists?) {
                 if (userList != null) {
 
-                    userList.items.forEach {
-                        if (it.name == itemName) {
-                            userList.items.remove(it)
+                    val iterator = userList.items.iterator()
+                    while (iterator.hasNext()) {
+                        val item = iterator.next()
+                        if (item.name == itemName) {
+                            iterator.remove()
                             Log.d("Deletion", "Item with name '$itemName' removed")
                         }
                     }

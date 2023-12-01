@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -37,26 +34,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.goshopapp.data.FirebaseAuth
 import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.interfaces.UserListsCallback
 import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.domain.model.Product
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
+import java.net.URLEncoder
 import kotlin.math.round
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun FavouritesScreen() {
+fun FavouritesScreen(navController: NavHostController) {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
-    var item by remember { mutableStateOf<Product?>(null) }
-    var isDeletePopupVisible by remember { mutableStateOf(false) }
-    fun toggleDeletePopupVisibility() {
-        isDeletePopupVisible = !isDeletePopupVisible
-    }
 
     DisposableEffect(Unit) {
         authManager.getCurrentUserId()?.let {
@@ -119,11 +114,20 @@ fun FavouritesScreen() {
                             .padding(16.dp)
                             .shadow(4.dp, shape = RoundedCornerShape(8.dp))
                             .background(Color.White)
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .clickable {
+                                val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+                                navController.navigate(
+                                    AppScreens.ProductDetailsScreen.route
+                                        + "/${product.name}"
+                                        + "/$encodedImageURL"
+                                        + "/${product.description}"
+                                        + "/${product.information}"
+                                        + "/${product.price}")
+                            },
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        item = product
                         // IMAGEN DEL PRODUCTO
                         AsyncImage(
                             model = product.image,
@@ -163,39 +167,9 @@ fun FavouritesScreen() {
                                 fontWeight = FontWeight.Light
                             )
                         }
-                        // BOTÓN DE ELIMINAR PRODUCTO DE LA LISTA
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(60.dp)
-                        ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Delete,
-                                    tint = androidx.compose.ui.graphics.Color.Red,
-                                    contentDescription = "Delete Product Icon",
-                                    modifier = Modifier
-                                        .background(androidx.compose.ui.graphics.Color.White)
-                                        .size(35.dp, 35.dp)
-                                        .clickable { }
-                                )
-                            }
-                        }
                     }
                 }
             }
-        }
-    }
-    if (isDeletePopupVisible) {
-        if (firstList != null) {
-            DeleteObjectScreen(false,
-                Lists(firstList.name, firstList.shared, firstList.aproxPrice, firstList.image, firstList.items),
-                item
-            )
         }
     }
 }

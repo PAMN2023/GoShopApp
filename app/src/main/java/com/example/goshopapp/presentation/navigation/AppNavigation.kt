@@ -77,7 +77,7 @@ fun AppNavigation(
                 navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
                 navController.navigate(LateralScreens.LoginScreen.route)
             } else {
-                FavouritesScreen()
+                FavouritesScreen(navController)
             }
         }
         composable(LateralScreens.HistoryScreen.route) {
@@ -130,4 +130,3 @@ fun AppNavigation(
         }
     }
 }
-

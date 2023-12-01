@@ -214,7 +214,6 @@ fun HomeContent(homeData: HomePageData, navController: NavHostController) {
                             .padding(16.dp)
                             .clickable {
                                 val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
-                                Log.d("URL", encodedImageURL)
                                 navController.navigate(AppScreens.ProductDetailsScreen.route
                                         + "/${product.name}"
                                         + "/$encodedImageURL"

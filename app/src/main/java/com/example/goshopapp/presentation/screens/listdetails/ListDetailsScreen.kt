@@ -173,7 +173,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                                 modifier = Modifier
                                     .background(Color.White)
                                     .size(35.dp, 35.dp)
-                                    .clickable { }
+                                    .clickable { toggleDeletePopupVisibility() }
                             )
                         }
                     }
@@ -181,33 +181,31 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
             }
             // BOTÓN DE AÑADIR COMO GASTO LA LISTA
             item {
-                if (listDetailsViewModel.listName != "Favoritos") {
-                    Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-                    Row (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = { /* accion al pulsar */ },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.size(width = 250.dp, height = 50.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
                     ) {
-                        Button(
-                            onClick = { /* accion al pulsar */ },
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.size(width = 250.dp, height = 50.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
-                        ) {
-                            Text(
-                                text = "AÑADIR COMO GASTO"
-                            )
-                        }
+                        Text(
+                            text = "AÑADIR COMO GASTO"
+                        )
                     }
                 }
             }
         }
     }
     if (isDeletePopupVisible) {
-        DeleteObjectScreen(false,
+        DeleteObjectScreen(true,
             Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items),
             item
         )

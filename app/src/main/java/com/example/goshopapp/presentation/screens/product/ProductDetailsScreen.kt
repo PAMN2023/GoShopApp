@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -20,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.goshopapp.data.FirebaseAuth
 import com.example.goshopapp.data.FirebaseFirestoreManage
+import com.example.goshopapp.domain.interfaces.FavItemCallback
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.screens.actionpopups.AddItemToListScreen
 
@@ -50,11 +53,27 @@ fun ProductDetailsScreen(
     productInformation: String?,
     productPrice: String?
     ) {
-    var isPopupVisible by remember { mutableStateOf(false) }
     val authManager = FirebaseAuth()
+    val storeManager = FirebaseFirestoreManage()
+    var isItemInList by remember { mutableStateOf(false) }
+    var isFavourite by remember { mutableStateOf(false) }
+    var isPopupVisible by remember { mutableStateOf(false) }
 
     fun togglePopupVisibility() {
         isPopupVisible = !isPopupVisible
+    }
+
+    DisposableEffect(Unit) {
+        authManager.getCurrentUserId()?.let {
+            if (productName != null) {
+                storeManager.isItemInFavourites(it, "Favoritos", productName, object : FavItemCallback {
+                    override fun onItemFavReceived(fav: Boolean) {
+                        isItemInList = fav
+                    }
+                })
+            }
+        }
+        onDispose { }
     }
 
     // COLUMNA QUE CONTENDRA TODA LA DESCRIPCIÓN DE PRODUCTO
@@ -168,20 +187,33 @@ fun ProductDetailsScreen(
                     )
                 )
             }
+
+            isFavourite = isItemInList
+
             IconButton(
                 onClick = {
+                    if (isFavourite) {
+                        if (
+                            productName != null
+                        ) {
+                            deleteItemFromFavList(authManager, "Favoritos", productName)
+                            isFavourite = false
+                        }
+                    } else {
                         if (
                             productName != null &&
                             productDescription != null &&
                             productInformation != null &&
                             productPrice != null &&
                             productImage != null
-                            ) {
+                        ) {
                             val item: Product = Product(productName, productDescription,productInformation,productPrice,productImage)
                             addItemToFavList(authManager, "Favoritos", item)
-                            }
+                            isFavourite = true
+                        }
+                    }
 
-                        },
+                },
                 modifier = Modifier
                     .padding(8.dp)
                     .height(50.dp)
@@ -189,7 +221,7 @@ fun ProductDetailsScreen(
                     .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.FavoriteBorder,
+                    imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = "Favourites Button",
                     tint = Color.White
                 )
@@ -209,4 +241,14 @@ fun addItemToFavList(
     val storeManager = FirebaseFirestoreManage()
 
     authManager.getCurrentUserId()?.let { storeManager.addItemToUserList(it,listName,item) }
+}
+
+fun deleteItemFromFavList(
+    authManager: FirebaseAuth,
+    listName: String,
+    itemName: String
+) {
+    val storeManager = FirebaseFirestoreManage()
+
+    authManager.getCurrentUserId()?.let { storeManager.deleteItemOfUserList(it,listName,itemName) }
 }
