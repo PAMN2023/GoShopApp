@@ -18,7 +18,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.goshopapp.presentation.components.BottomNavigationBar
@@ -28,8 +27,6 @@ import com.example.goshopapp.presentation.navigation.AppNavigation
 import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.AppScreens.*
 import com.example.goshopapp.presentation.ui.theme.GoShopAppTheme
-import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +47,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val listDetailsViewModel = viewModel<ListDetailsViewModel>()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     
     val navigationItems = listOf(
@@ -61,14 +57,12 @@ fun MainScreen() {
 
     LateralMenu(
         navController = navController,
-        drawerState = drawerState,
-        listDetailsViewModel = listDetailsViewModel
+        drawerState = drawerState
     ) {
         Content(
             navController = navController,
             navigationItems =navigationItems,
-            drawerState = drawerState,
-            listDetailsViewModel
+            drawerState = drawerState
         )
     }
 }
@@ -77,8 +71,7 @@ fun MainScreen() {
 fun Content(
     navController: NavHostController,
     navigationItems: List<AppScreens>,
-    drawerState: DrawerState,
-    listDetailsViewModel: ListDetailsViewModel
+    drawerState: DrawerState
 ){
     Scaffold(
         topBar = {
@@ -90,7 +83,7 @@ fun Content(
             .padding(padding)
             .fillMaxSize()
         ){
-            AppNavigation(navController,listDetailsViewModel)
+            AppNavigation(navController)
         }
     }
 }

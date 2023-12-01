@@ -1,7 +1,6 @@
 package com.example.goshopapp.presentation.components
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.goshopapp.data.FirebaseAuth
-import com.example.goshopapp.data.FirebaseFirestoreManage
-import com.example.goshopapp.domain.interfaces.UserListsCallback
-import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 import com.example.goshopapp.presentation.navigation.LateralScreens.*
-import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,32 +43,11 @@ import kotlinx.coroutines.launch
 fun LateralMenu(
     navController: NavHostController,
     drawerState: DrawerState,
-    listDetailsViewModel: ListDetailsViewModel,
     content: @Composable () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val authManager = FirebaseAuth()
-    val storeManager = FirebaseFirestoreManage()
     var isUserAuthenticated by remember { mutableStateOf(false) }
-    var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
-
-    // CARGA LAS LISTAS DEL USUARIO
-    LaunchedEffect(Unit) {
-        authManager.getCurrentUserId()?.let {
-            storeManager.getIterableUserLists(it, object : UserListsCallback {
-                override fun onUserListsReceived(data: MutableList<Lists>) {
-                    userLists = data
-                    Log.d("LISTITA", userLists.toString())
-                }
-
-                override fun onUserDataError(error: Exception) {
-                    Log.d("Error", "Error al obtener datos: $error")
-                }
-            })
-        }
-    }
-    // SE QUEDA CON LA LISTA DE FAVORITOS
-    val firstList: Lists? = userLists?.firstOrNull()
 
     scope.launch {
         while (true) {
@@ -170,14 +144,7 @@ fun LateralMenu(
                                         scope.launch {
                                             drawerState.close()
                                         }
-                                        if (firstList != null) {
-                                            val favouritesList: Lists = firstList
-                                            listDetailsViewModel.items.clear()
-                                            listDetailsViewModel.items.addAll(favouritesList.items)
-                                            listDetailsViewModel.listName = favouritesList.name
-                                            listDetailsViewModel.isShared = favouritesList.shared
-                                            navController.navigate(AppScreens.ListDetailsScreen.route)
-                                        }
+                                        navController.navigate(LateralScreens.FavouritesScreen.route)
                                     })
                             )
                         } else {

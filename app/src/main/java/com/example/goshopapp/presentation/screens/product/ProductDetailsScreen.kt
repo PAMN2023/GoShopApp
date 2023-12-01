@@ -37,9 +37,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.goshopapp.data.FirebaseAuth
+import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.screens.actionpopups.AddItemToListScreen
-import com.example.goshopapp.presentation.screens.actionpopups.CreateListScreen
 
 @Composable
 fun ProductDetailsScreen(
@@ -50,9 +51,12 @@ fun ProductDetailsScreen(
     productPrice: String?
     ) {
     var isPopupVisible by remember { mutableStateOf(false) }
+    val authManager = FirebaseAuth()
+
     fun togglePopupVisibility() {
         isPopupVisible = !isPopupVisible
     }
+
     // COLUMNA QUE CONTENDRA TODA LA DESCRIPCIÓN DE PRODUCTO
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,7 +169,19 @@ fun ProductDetailsScreen(
                 )
             }
             IconButton(
-                onClick = { /* Acción al hacer clic */ },
+                onClick = {
+                        if (
+                            productName != null &&
+                            productDescription != null &&
+                            productInformation != null &&
+                            productPrice != null &&
+                            productImage != null
+                            ) {
+                            val item: Product = Product(productName, productDescription,productInformation,productPrice,productImage)
+                            addItemToFavList(authManager, "Favoritos", item)
+                            }
+
+                        },
                 modifier = Modifier
                     .padding(8.dp)
                     .height(50.dp)
@@ -183,4 +199,14 @@ fun ProductDetailsScreen(
     if (isPopupVisible) {
         isPopupVisible = AddItemToListScreen(Product(productName!!,productDescription!!,productInformation!!,productPrice!!,productImage!!))
     }
+}
+
+fun addItemToFavList(
+    authManager: FirebaseAuth,
+    listName: String,
+    item: Product
+) {
+    val storeManager = FirebaseFirestoreManage()
+
+    authManager.getCurrentUserId()?.let { storeManager.addItemToUserList(it,listName,item) }
 }
