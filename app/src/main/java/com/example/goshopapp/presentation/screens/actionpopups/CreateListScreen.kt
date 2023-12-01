@@ -2,7 +2,9 @@ package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
 import android.view.View
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,9 +54,10 @@ fun CreateListScreen(): Boolean {
         containerColor = Color(android.graphics.Color.parseColor("#D3D3D3")))
     Column(
         modifier = Modifier
-            .height(350.dp)
-            .width(350.dp)
-            .background(Color(0xefffffff)),
+            .height(370.dp)
+            .width(400.dp)
+            .background(Color(0xefffffff))
+            .border(BorderStroke(2.dp, Color(0xef007562)), shape = MaterialTheme.shapes.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -63,7 +66,8 @@ fun CreateListScreen(): Boolean {
             color = Color.Black,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            fontSize = 20.sp
+            fontSize = 20.sp,
+            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
         )
         Text(text = "NOMBRE DE LA LISTA",
             color = Color(android.graphics.Color.parseColor("#007562")),
@@ -72,7 +76,7 @@ fun CreateListScreen(): Boolean {
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 24.dp, end = 24.dp, bottom = 10.dp)
+                .padding(start = 24.dp, end = 24.dp, bottom = 5.dp)
         )
         TextField(
             value = listName.value,
@@ -94,6 +98,7 @@ fun CreateListScreen(): Boolean {
             shape = MaterialTheme.shapes.large,
             colors = textFieldsColors
         )
+        Spacer(modifier = Modifier.height(20.dp))
         Text(text = "IMAGEN DE LA LISTA",
             color = Color(android.graphics.Color.parseColor("#007562")),
             fontWeight = FontWeight.Bold,
@@ -101,7 +106,7 @@ fun CreateListScreen(): Boolean {
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 24.dp, end = 24.dp, bottom = 10.dp)
+                .padding(start = 24.dp, end = 24.dp, bottom = 5.dp)
         )
         TextField(
             value = listImg.value,
@@ -142,7 +147,7 @@ fun CreateListScreen(): Boolean {
                     color = Color.White,
                     fontWeight = FontWeight.Bold)
             }
-            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(40.dp))
             Button(
                 onClick = {
                     storeManager.createUserList(userId!!, listName.value, listImg.value)

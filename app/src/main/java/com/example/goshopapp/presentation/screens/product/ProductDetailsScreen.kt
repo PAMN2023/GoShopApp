@@ -229,7 +229,18 @@ fun ProductDetailsScreen(
         }
     }
     if (isPopupVisible) {
-        isPopupVisible = AddItemToListScreen(Product(productName!!,productDescription!!,productInformation!!,productPrice!!,productImage!!))
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isPopupVisible = AddItemToListScreen(Product(productName!!, productDescription!!, productInformation!!, productPrice!!, productImage!!))
+            }
+        }
     }
 }
 

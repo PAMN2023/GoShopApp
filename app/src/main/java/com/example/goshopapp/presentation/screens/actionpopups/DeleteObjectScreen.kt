@@ -1,7 +1,9 @@
 package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,8 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.goshopapp.data.FirebaseAuth
 import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.model.Lists
@@ -40,16 +44,20 @@ fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = nu
     if (deleteItem) {
         Column(
             modifier = Modifier
-                .height(150.dp)
-                .width(350.dp)
-                .background(Color(0xefffffff)),
+                .height(200.dp)
+                .width(400.dp)
+                .background(Color(0xefffffff))
+                .border(BorderStroke(2.dp, Color(0xef007562)), shape = MaterialTheme.shapes.medium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-            text = "¿Esta seguro de querer\neliminar "+item!!.name+" de\n la lista "+userList.name+"?",
-            color = Color.Black,
-            fontWeight = FontWeight.Bold
+                text = "¿Esta seguro de querer\neliminar "+item!!.name+" de\n la lista "+userList.name+"?",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(top = 20.dp)
             )
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -92,15 +100,19 @@ fun DeleteObjectScreen(deleteItem: Boolean, userList: Lists, item: Product? = nu
         Column(
             modifier = Modifier
                 .height(150.dp)
-                .width(350.dp)
-                .background(Color(0xefffffff)),
+                .width(400.dp)
+                .background(Color(0xefffffff))
+                .border(BorderStroke(2.dp, Color(0xef007562)), shape = MaterialTheme.shapes.extraLarge),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "¿Esta seguro de querer\neliminar la lista " + userList.name + "?",
                 color = Color.Black,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(top = 20.dp)
             )
             Row(
                 modifier = Modifier.fillMaxSize(),

@@ -240,10 +240,32 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
 
     }
     if (isCreatePopupVisible) {
-        isCreatePopupVisible = CreateListScreen()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isCreatePopupVisible = CreateListScreen()
+            }
+        }
     }
     if (isDeletePopupVisible) {
-        isDeletePopupVisible = DeleteObjectScreen(false, userList!!)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isDeletePopupVisible = DeleteObjectScreen(false, userList!!)
+            }
+        }
     }
 }
 
