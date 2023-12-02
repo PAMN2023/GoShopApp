@@ -47,6 +47,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 import com.example.goshopapp.presentation.screens.actionpopups.CreateListScreen
 import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
@@ -250,6 +251,9 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 isCreatePopupVisible = CreateListScreen()
+                if (!isCreatePopupVisible) {
+                    navController.navigate(LateralScreens.ListsScreen.route)
+                }
             }
         }
     }
@@ -264,6 +268,9 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 isDeletePopupVisible = DeleteObjectScreen(false, userList!!)
+                if (!isDeletePopupVisible) {
+                    navController.navigate(LateralScreens.ListsScreen.route)
+                }
             }
         }
     }
