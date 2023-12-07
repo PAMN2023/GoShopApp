@@ -1,13 +1,18 @@
 package com.example.goshopapp.data
 
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import com.example.goshopapp.domain.model.Product
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import org.json.JSONObject
+
 
 class APIRequest(val productId: String) {
     fun execute(): Product {
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+
         val request = Request.Builder()
             .url("https://world.openfoodfacts.net/api/v2/product/$productId")
             .build()
@@ -18,7 +23,7 @@ class APIRequest(val productId: String) {
             return Product(
                 productData["product_name"].toString(),
                 "description",
-                "information",
+                productData["ingredients_text"].toString(),
                 "price",
                 productData["image_url"].toString()
             )

@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.model.HomePageData
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.navigation.AppScreens
@@ -266,9 +265,10 @@ fun HomeContent(homeData: HomePageData, navController: NavHostController) {
                         )
                         // BOTÓN DE AÑADIR PRODUCTO
                         Button(
-                            onClick = { togglePopupVisibility()
-                                        productItem = product
-                                        },
+                            onClick = {
+                                productItem = product
+                                togglePopupVisibility()
+                            },
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.size(width = 100.dp, height = 30.dp),
                             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
