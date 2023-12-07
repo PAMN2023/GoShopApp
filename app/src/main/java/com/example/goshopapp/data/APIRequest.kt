@@ -14,7 +14,7 @@ class APIRequest(val productId: String) {
         StrictMode.setThreadPolicy(policy)
 
         val request = Request.Builder()
-            .url("https://world.openfoodfacts.net/api/v2/product/$productId")
+            .url("https://world.openfoodfacts.net/api/v2/product/$productId?fields=product_name,ingredients_text,image_url")
             .build()
         val response = OkHttpClient().newCall(request).execute()
         if (response.isSuccessful) {
