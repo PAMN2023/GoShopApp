@@ -58,12 +58,13 @@ fun ScannerScreen(navController: NavHostController) {
     if (showDialog) {
         val product: Product = APIRequest(scannedValue!!).execute()
         val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+        val encodedInformation = URLEncoder.encode(product.information, "UTF-8").replace("+", " ")
         navController.navigate(
             AppScreens.ProductDetailsScreen.route
                 + "/${product.name}"
                 + "/$encodedImageURL"
                 + "/${product.description}"
-                + "/${product.information}"
+                + "/$encodedInformation"
                 + "/${product.price}"
         )
 
@@ -73,7 +74,7 @@ fun ScannerScreen(navController: NavHostController) {
 // Función para abrir la cámara y escanear el código de barras
 private fun openCamera(context: Context, launcher: ActivityResultLauncher<Intent>) {
     val integrator = IntentIntegrator(context as Activity)
-        .setDesiredBarcodeFormats(IntentIntegrator.EAN_13)
+        .setDesiredBarcodeFormats(IntentIntegrator.EAN_13, IntentIntegrator.EAN_8)
         .setPrompt("Escanea tu producto")
         .setOrientationLocked(false)
         .setBeepEnabled(true)
