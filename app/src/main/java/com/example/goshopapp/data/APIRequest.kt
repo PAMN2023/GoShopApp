@@ -21,10 +21,10 @@ class APIRequest(val productId: String) {
             val jsonObject = JSONObject(response.body!!.string())
             val productData = jsonObject.getJSONObject("product")
             return Product(
-                productData["product_name"].toString(),
+                productData["product_name"].toString().replace(".","").replace("  ", " "),
                 "description",
                 productData["ingredients_text"].toString(),
-                "price",
+                "2.99",
                 productData["image_url"].toString()
             )
         } else {

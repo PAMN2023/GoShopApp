@@ -23,10 +23,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
+import com.example.goshopapp.data.APIRequest
+import com.example.goshopapp.domain.model.Product
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.google.zxing.integration.android.IntentIntegrator
+import java.net.URLEncoder
 
 @Composable
-fun ScannerScreen() {
+fun ScannerScreen(navController: NavHostController) {
     val buttonColor = ComposeColor(android.graphics.Color.parseColor("#007562"))
     val context = LocalContext.current
     var scannedValue by remember { mutableStateOf<String?>(null) }
@@ -50,21 +55,18 @@ fun ScannerScreen() {
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
+    if (showDialog) {
+        val product: Product = APIRequest(scannedValue!!).execute()
+        val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+        navController.navigate(
+            AppScreens.ProductDetailsScreen.route
+                + "/${product.name}"
+                + "/$encodedImageURL"
+                + "/${product.description}"
+                + "/${product.information}"
+                + "/${product.price}"
+        )
 
-        // Mostrar el diálogo si showDialog es true
-        if (showDialog) {
-            ShowBarcodeDialog(scannedValue ?: "") {
-                // Reiniciar el valor escaneado y activar la cámara nuevamente
-                scannedValue = null
-                showDialog = false
-            }
-        }
     }
 }
 
