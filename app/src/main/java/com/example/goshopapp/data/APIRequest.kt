@@ -19,9 +19,29 @@ class APIRequest(val productId: String) {
         if (response.isSuccessful) {
             val jsonObject = JSONObject(response.body!!.string())
             val productData = jsonObject.getJSONObject("product")
-            var ingredients = productData["ingredients_text"].toString()
 
-            // Comprobar si los ingredientes existen
+            // Comprobar si el campo nombre existe
+            val productName = if (productData.has("product_name")) {
+                productData["product_name"].toString().trim().replace(Regex("\\s+"), " ").replace(Regex("[^a-zA-Z0-9\\s]"), "")
+            } else {
+                "product not found"
+            }
+
+            // Comprobar si el campo imagen existe
+            val productImage = if (productData.has("image_url")) {
+                productData["image_url"].toString()
+            } else {
+                "https://firebasestorage.googleapis.com/v0/b/goshopapp-f2548.appspot.com/o/Iconos%2Fplaceholder.png?alt=media&token=c0067f0d-2242-4bc6-a224-3dc0643933df"
+            }
+
+            // Comprobar si el campo ingredientes existe
+            var ingredients = if (productData.has("ingredients_text")) {
+                productData["ingredients_text"].toString()
+            } else {
+                ""
+            }
+
+            // Comprobar si los ingredientes están vacíos
             if (ingredients == "") {
                 ingredients = "Ingredientes no disponibles para este producto"
             }
@@ -37,15 +57,15 @@ class APIRequest(val productId: String) {
 
             return Product(
                 // Nombre
-                productData["product_name"].toString().trim().replace(Regex("\\s+"), " ").replace(Regex("[^a-zA-Z0-9\\s]"), ""),
+                productName.ifEmpty { "product not found" },
                 // Descripción (Temporalmente es el nombre)
-                productData["product_name"].toString().trim().replace(Regex("\\s+"), " ").replace(Regex("[^a-zA-Z0-9\\s]"), ""),
+                productName.ifEmpty { "product not found" },
                 // Ingredientes (Campo information del producto en BDD)
                 ingredients,
                 // Precio (Random)
                 numeroString.replace(",","."),
                 // Imagen
-                productData["image_url"].toString()
+                productImage.ifEmpty { "https://firebasestorage.googleapis.com/v0/b/goshopapp-f2548.appspot.com/o/Iconos%2Fplaceholder.png?alt=media&token=c0067f0d-2242-4bc6-a224-3dc0643933df" }
             )
         } else {
             return Product(
