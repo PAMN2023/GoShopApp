@@ -44,6 +44,7 @@ import com.example.goshopapp.data.FirebaseFirestoreManage
 import com.example.goshopapp.domain.interfaces.FavItemCallback
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.screens.actionpopups.AddItemToListScreen
+import java.net.URLEncoder
 
 @Composable
 fun ProductDetailsScreen(
@@ -52,7 +53,7 @@ fun ProductDetailsScreen(
     productDescription: String?,
     productInformation: String?,
     productPrice: String?
-    ) {
+) {
     val authManager = FirebaseAuth()
     val storeManager = FirebaseFirestoreManage()
     var isItemInList by remember { mutableStateOf(false) }
@@ -76,169 +77,183 @@ fun ProductDetailsScreen(
         onDispose { }
     }
 
-    // COLUMNA QUE CONTENDRA TODA LA DESCRIPCIÓN DE PRODUCTO
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
-    ){
-        if (productName != null) {
-            // NOMBRE DEL PRODUCTO
-            Text(
-                text = productName,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    color = Color(0XFF007562),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            )
+    // Controlamos si el producto existe en la API o no
+    if (productName == "product not found") {
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ){
+            Text(text = "El producto no existe")
         }
-        // IMAGEN DEL PRODUCTO
-        if (productImage != null) {
-            AsyncImage(
-                model = productImage,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Inside,
-                contentDescription = null
-            )
-        }
-        // DESCRIPCIÓN DEL PRODUCTO
-        if (productDescription != null) {
-            val descriptionText = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append("Descripción del producto: ")
-                }
-                append(productDescription)
-            }
-            Text(
-                text = descriptionText,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-        }
-        // INFORMACIÓN NUTRICIONAL DEL PRODUCTO
-        if (productInformation != null) {
-            val informationText = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append("Información nutricional: ")
-                }
-                append(productInformation)
-            }
-            Text(
-                text = informationText,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-        }
-        // PRECIO DEL PRODUCTO
-        if (productInformation != null) {
-            val priceText = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append("Precio aproximado: ")
-                }
-                append(productPrice)
-                append(" €")
-            }
-            Text(
-                text = priceText,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-        }
-        // BOTONES DE AÑADIR A LISTA Y A FAVORITOS
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Button (
-                onClick = { togglePopupVisibility() },
-                shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-                modifier = Modifier.size(width = 200.dp, height = 50.dp)
-            ) {
+    } else {
+        // COLUMNA QUE CONTENDRA TODA LA DESCRIPCIÓN DE PRODUCTO
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+        ){
+            if (productName != null) {
+                // NOMBRE DEL PRODUCTO
                 Text(
-                    text = "Añadir a Lista",
-                    fontWeight = FontWeight.Bold,
+                    text = productName,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        color = Color(0XFF007562),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                )
+            }
+            // IMAGEN DEL PRODUCTO
+            if (productImage != null) {
+                AsyncImage(
+                    model = productImage,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    contentScale = ContentScale.Inside,
+                    contentDescription = null
+                )
+            }
+            // DESCRIPCIÓN DEL PRODUCTO
+            if (productDescription != null) {
+                val descriptionText = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Descripción del producto: ")
+                    }
+                    append(productDescription)
+                }
+                Text(
+                    text = descriptionText,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
                     style = TextStyle(
                         fontSize = 16.sp
                     )
                 )
             }
-
-            isFavourite = isItemInList
-
-            IconButton(
-                onClick = {
-                    if (isFavourite) {
-                        if (
-                            productName != null
-                        ) {
-                            deleteItemFromFavList(authManager, "Favoritos", productName)
-                            isFavourite = false
-                        }
-                    } else {
-                        if (
-                            productName != null &&
-                            productDescription != null &&
-                            productInformation != null &&
-                            productPrice != null &&
-                            productImage != null
-                        ) {
-                            val item: Product = Product(productName, productDescription,productInformation,productPrice,productImage)
-                            addItemToFavList(authManager, "Favoritos", item)
-                            isFavourite = true
-                        }
+            // INFORMACIÓN NUTRICIONAL DEL PRODUCTO
+            if (productInformation != null) {
+                val informationText = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Información nutricional: ")
                     }
-
-                },
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(50.dp)
-                    .width(75.dp)
-                    .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
-            ) {
-                Icon(
-                    imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favourites Button",
-                    tint = Color.White
+                    append(productInformation)
+                }
+                Text(
+                    text = informationText,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontSize = 16.sp
+                    )
                 )
             }
-        }
-    }
-    if (isPopupVisible) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
+            // PRECIO DEL PRODUCTO
+            if (productInformation != null) {
+                val priceText = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Precio aproximado: ")
+                    }
+                    append(productPrice)
+                    append(" €")
+                }
+                Text(
+                    text = priceText,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontSize = 16.sp
+                    )
+                )
+            }
+            // BOTONES DE AÑADIR A LISTA Y A FAVORITOS
             Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                isPopupVisible = AddItemToListScreen(Product(productName!!, productDescription!!, productInformation!!, productPrice!!, productImage!!))
+                Button (
+                    onClick = { togglePopupVisibility() },
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+                    modifier = Modifier.size(width = 200.dp, height = 50.dp)
+                ) {
+                    Text(
+                        text = "Añadir a Lista",
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+
+                isFavourite = isItemInList
+
+                IconButton(
+                    onClick = {
+                        if (isFavourite) {
+                            if (
+                                productName != null
+                            ) {
+                                deleteItemFromFavList(authManager, "Favoritos", productName)
+                                isFavourite = false
+                            }
+                        } else {
+                            if (
+                                productName != null &&
+                                productDescription != null &&
+                                productInformation != null &&
+                                productPrice != null &&
+                                productImage != null
+                            ) {
+                                val encodedInformation =
+                                    URLEncoder.encode(productInformation, "UTF-8").replace("+", " ")
+                                val item: Product = Product(productName, productDescription,encodedInformation,productPrice,productImage)
+                                addItemToFavList(authManager, "Favoritos", item)
+                                isFavourite = true
+                            }
+                        }
+
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .height(50.dp)
+                        .width(75.dp)
+                        .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
+                ) {
+                    Icon(
+                        imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favourites Button",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+        if (isPopupVisible) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val encodedInformation =
+                        URLEncoder.encode(productInformation, "UTF-8").replace("+", " ")
+                    isPopupVisible = AddItemToListScreen(Product(productName!!, productDescription!!, encodedInformation, productPrice!!, productImage!!))
+                }
             }
         }
     }
