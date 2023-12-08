@@ -19,9 +19,15 @@ class APIRequest(val productId: String) {
         if (response.isSuccessful) {
             val jsonObject = JSONObject(response.body!!.string())
             val productData = jsonObject.getJSONObject("product")
-            var ingredients = productData["ingredients_text"].toString()
 
             // Comprobar si los ingredientes existen
+            var ingredients = if (productData.has("ingredients_text")) {
+                productData["ingredients_text"].toString()
+            } else {
+                ""
+            }
+
+            // Comprobar si los ingredientes están vacíos
             if (ingredients == "") {
                 ingredients = "Ingredientes no disponibles para este producto"
             }
