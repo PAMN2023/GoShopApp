@@ -125,7 +125,7 @@ fun AppNavigation(
                 navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
                 navController.navigate(LateralScreens.LoginScreen.route)
             } else {
-                ListDetailsScreen(listDetailsViewModel)
+                ListDetailsScreen(navController, listDetailsViewModel)
             }
         }
     }
