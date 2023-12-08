@@ -12,12 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,11 +22,13 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.example.goshopapp.data.APIRequest
+import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.navigation.AppScreens
 import com.google.zxing.integration.android.IntentIntegrator
+import java.net.URLEncoder
 
 @Composable
 fun ScannerScreen(navController: NavHostController) {
@@ -57,28 +55,26 @@ fun ScannerScreen(navController: NavHostController) {
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
+    if (showDialog) {
+        val product: Product = APIRequest(scannedValue!!).execute()
+        val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+        val encodedInformation = URLEncoder.encode(product.information, "UTF-8").replace("+", " ")
+        navController.navigate(
+            AppScreens.ProductDetailsScreen.route
+                + "/${product.name}"
+                + "/$encodedImageURL"
+                + "/${product.description}"
+                + "/$encodedInformation"
+                + "/${product.price}"
+        )
 
-        // Mostrar el diálogo si showDialog es true
-        if (showDialog) {
-            ShowBarcodeDialog(scannedValue ?: "", navController) {
-                // Reiniciar el valor escaneado y activar la cámara nuevamente
-                scannedValue = null
-                showDialog = false
-            }
-        }
     }
 }
 
 // Función para abrir la cámara y escanear el código de barras
 private fun openCamera(context: Context, launcher: ActivityResultLauncher<Intent>) {
     val integrator = IntentIntegrator(context as Activity)
-        .setDesiredBarcodeFormats(IntentIntegrator.EAN_13)
+        .setDesiredBarcodeFormats(IntentIntegrator.EAN_13, IntentIntegrator.EAN_8)
         .setPrompt("Escanea tu producto")
         .setOrientationLocked(false)
         .setBeepEnabled(true)
@@ -111,7 +107,7 @@ private const val CAMERA_PERMISSION_REQUEST_CODE = 1001
 
 // Mostrar el diálogo con el valor del código de barras
 @Composable
-fun ShowBarcodeDialog(barcodeValue: String, navController: NavHostController, onClose: () -> Unit) {
+fun ShowBarcodeDialog(barcodeValue: String, onClose: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onClose() },
         title = { Text("Código de Barras") },
@@ -120,8 +116,6 @@ fun ShowBarcodeDialog(barcodeValue: String, navController: NavHostController, on
             Button(
                 onClick = {
                     onClose()
-                    //Redirección Temporal
-                    navController.navigate(AppScreens.HomeScreen.route)
                 }
             ) {
                 Text("Aceptar")

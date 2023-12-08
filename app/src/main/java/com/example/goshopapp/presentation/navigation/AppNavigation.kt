@@ -65,13 +65,28 @@ fun AppNavigation(
             }
         }
         composable(LateralScreens.ExpensesScreen.route) {
-            ExpensesScreen()
+            if (authManager.getCurrentUserId() == null) {
+                navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+                navController.navigate(LateralScreens.LoginScreen.route)
+            } else {
+                ExpensesScreen()
+            }
         }
         composable(LateralScreens.FavouritesScreen.route) {
-            FavouritesScreen()
+            if (authManager.getCurrentUserId() == null) {
+                navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+                navController.navigate(LateralScreens.LoginScreen.route)
+            } else {
+                FavouritesScreen(navController)
+            }
         }
         composable(LateralScreens.HistoryScreen.route) {
-            HistoryScreen()
+            if (authManager.getCurrentUserId() == null) {
+                navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+                navController.navigate(LateralScreens.LoginScreen.route)
+            } else {
+                HistoryScreen()
+            }
         }
         composable(AppScreens.ProductDetailsScreen.route
                 + "/{productName}"
@@ -106,8 +121,12 @@ fun AppNavigation(
             )
         }
         composable(AppScreens.ListDetailsScreen.route) {
-            ListDetailsScreen(listDetailsViewModel)
+            if (authManager.getCurrentUserId() == null) {
+                navController.popBackStack(AppScreens.HomeScreen.route, inclusive = false)
+                navController.navigate(LateralScreens.LoginScreen.route)
+            } else {
+                ListDetailsScreen(listDetailsViewModel)
+            }
         }
     }
 }
-

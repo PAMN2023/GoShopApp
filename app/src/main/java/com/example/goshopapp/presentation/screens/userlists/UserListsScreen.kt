@@ -47,6 +47,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 import com.example.goshopapp.presentation.screens.actionpopups.CreateListScreen
 import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
@@ -195,7 +196,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                         modifier = Modifier
                                             .padding(bottom = 8.dp)
                                             .size(35.dp, 35.dp)
-                                            .clickable { }
+                                            .clickable { toggleDeletePopupVisibility() }
                                     )
                                 }
                             } else {
@@ -211,7 +212,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                         contentDescription = "Delete Product Icon",
                                         modifier = Modifier
                                             .size(35.dp, 35.dp)
-                                            .clickable { }
+                                            .clickable { toggleDeletePopupVisibility() }
                                     )
                                 }
                             }
@@ -220,27 +221,58 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
+            item {
+                Button (
+                    onClick = { toggleCreatePopupVisibility() },
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+                    modifier = Modifier.size(width = 200.dp, height = 50.dp)
+                ) {
+                    Text(
+                        text = "CREAR LISTA",
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+            }
         }
-        Button (
-            onClick = { toggleCreatePopupVisibility() },
-            shape = RoundedCornerShape(12.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-            modifier = Modifier.size(width = 200.dp, height = 50.dp)
-        ) {
-            Text(
-                text = "CREAR LISTA",
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-        }
+
     }
     if (isCreatePopupVisible) {
-        CreateListScreen()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isCreatePopupVisible = CreateListScreen()
+                if (!isCreatePopupVisible) {
+                    navController.navigate(LateralScreens.ListsScreen.route)
+                }
+            }
+        }
     }
     if (isDeletePopupVisible) {
-        DeleteObjectScreen(false, userList!!)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isDeletePopupVisible = DeleteObjectScreen(false, userList!!)
+                if (!isDeletePopupVisible) {
+                    navController.navigate(LateralScreens.ListsScreen.route)
+                }
+            }
+        }
     }
 }
 

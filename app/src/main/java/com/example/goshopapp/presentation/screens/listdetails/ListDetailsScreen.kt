@@ -1,6 +1,8 @@
 package com.example.goshopapp.presentation.screens.listdetails
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +25,7 @@ import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,6 +53,7 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
     val items = listDetailsViewModel.items
     var isDeletePopupVisible by remember { mutableStateOf(false) }
     var item by remember {mutableStateOf<Product?>(null)}
+    var deleteItem by remember {mutableStateOf<Product?>(null)}
     fun toggleDeletePopupVisibility() {
         isDeletePopupVisible = !isDeletePopupVisible
     }
@@ -173,7 +177,10 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                                 modifier = Modifier
                                     .background(Color.White)
                                     .size(35.dp, 35.dp)
-                                    .clickable { }
+                                    .clickable {
+                                        toggleDeletePopupVisibility()
+                                        deleteItem = product
+                                    }
                             )
                         }
                     }
@@ -205,9 +212,17 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
         }
     }
     if (isDeletePopupVisible) {
-        DeleteObjectScreen(false,
-            Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items),
-            item
-        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isDeletePopupVisible = DeleteObjectScreen(true, Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items), deleteItem)
+            }
+        }
     }
 }
