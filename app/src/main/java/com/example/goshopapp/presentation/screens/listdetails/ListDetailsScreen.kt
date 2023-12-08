@@ -25,6 +25,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -33,15 +37,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.goshopapp.domain.model.Lists
+import com.example.goshopapp.domain.model.Product
+import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
+import java.net.URLEncoder
 import kotlin.math.round
 
 @Composable
-fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
+fun ListDetailsScreen(navController: NavHostController, listDetailsViewModel: ListDetailsViewModel) {
 
     val items = listDetailsViewModel.items
-
+    var isDeletePopupVisible by remember { mutableStateOf(false) }
+    var item by remember {mutableStateOf<Product?>(null)}
+    var deleteItem by remember {mutableStateOf<Product?>(null)}
+    fun toggleDeletePopupVisibility() {
+        isDeletePopupVisible = !isDeletePopupVisible
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,10 +115,21 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                         .padding(16.dp)
                         .shadow(4.dp, shape = RoundedCornerShape(8.dp))
                         .background(Color.White)
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable {
+                            val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+                            navController.navigate(
+                                AppScreens.ProductDetailsScreen.route
+                                        + "/${product.name}"
+                                        + "/$encodedImageURL"
+                                        + "/${product.description}"
+                                        + "/${product.information}"
+                                        + "/${product.price}")
+                        },
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    item = product
                     // IMAGEN DEL PRODUCTO
                     AsyncImage(
                         model = product.image,
@@ -161,7 +187,10 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                                 modifier = Modifier
                                     .background(Color.White)
                                     .size(35.dp, 35.dp)
-                                    .clickable { }
+                                    .clickable {
+                                        toggleDeletePopupVisibility()
+                                        deleteItem = product
+                                    }
                             )
                         }
                     }
@@ -189,6 +218,20 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                         )
                     }
                 }
+            }
+        }
+    }
+    if (isDeletePopupVisible) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                isDeletePopupVisible = DeleteObjectScreen(true, Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items), deleteItem)
             }
         }
     }

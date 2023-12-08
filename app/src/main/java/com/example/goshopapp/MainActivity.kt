@@ -27,7 +27,6 @@ import com.example.goshopapp.presentation.navigation.AppNavigation
 import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.AppScreens.*
 import com.example.goshopapp.presentation.ui.theme.GoShopAppTheme
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

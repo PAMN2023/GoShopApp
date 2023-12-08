@@ -2,12 +2,16 @@ package com.example.goshopapp.presentation.screens.actionpopups
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,16 +41,20 @@ import com.example.goshopapp.domain.model.Product
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun AddItemToListScreen(product: Product) {
+fun AddItemToListScreen(product: Product): Boolean {
     val storeManager = FirebaseFirestoreManage()
     val authManager = FirebaseAuth()
     val userId = authManager.getCurrentUserId()
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
-
+    var result by remember { mutableStateOf(true) }
     DisposableEffect(Unit) {
         userId?.let {
             storeManager.getIterableUserLists(it, object : UserListsCallback {
                 override fun onUserListsReceived(data: MutableList<Lists>) {
+                    val favIndex = data.indexOfFirst { it.name == "Favoritos" }
+                    if (favIndex != -1) {
+                        data.removeAt(favIndex)
+                    }
                     userLists = data
                 }
                 override fun onUserDataError(error: Exception) {
@@ -58,12 +67,18 @@ fun AddItemToListScreen(product: Product) {
 
     Column(
         modifier = Modifier
-            .height(350.dp)
-            .width(100.dp),
+            .height(450.dp)
+            .width(250.dp)
+            .background(Color(0xefffffff))
+            .border(BorderStroke(2.dp, Color(0xef007562)), shape = MaterialTheme.shapes.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "¿A que lista quiere\nagregar el producto?")
+        Text(text = "¿A que lista quiere\nagregar el producto?",
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
+            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -75,38 +90,44 @@ fun AddItemToListScreen(product: Product) {
                     Button(
                         onClick = {
                             storeManager.addItemToUserList(userId!!,list.name,product)
+                            result = false
                         },
+                        shape = MaterialTheme.shapes.large,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(android.graphics.Color.parseColor("#962B00")),
-                            contentColor = Color(android.graphics.Color.parseColor("#962B00"))
-                        )
+                            containerColor = Color(android.graphics.Color.parseColor("#007562")),
+                            contentColor = Color(android.graphics.Color.parseColor("#007562"))
+                        ),
+                        modifier = Modifier.padding(bottom = 10.dp)
                     ) {
-                        Text(text = list.name, color = Color(0xFF007562), fontWeight = FontWeight.Bold)
+                        Text(text = list.name, color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
-        }
-        Row (
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    //Evento de cierre
-                },
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(android.graphics.Color.parseColor("#962B00")),
-                    contentColor = Color(android.graphics.Color.parseColor("#962B00"))
-                )
-            ) {
-                Text(text = "CANCELAR",
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontWeight = FontWeight.Bold)
+            item {
+                    Row (
+                        modifier = Modifier.fillMaxSize().padding(top = 20.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Button(
+                            onClick = {
+                                result = false
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(android.graphics.Color.parseColor("#962B00")),
+                                contentColor = Color(android.graphics.Color.parseColor("#962B00"))
+                            )
+                        ) {
+                            Text(text = "CANCELAR",
+                                color = androidx.compose.ui.graphics.Color.White,
+                                fontWeight = FontWeight.Bold)
+                        }
+                    }
             }
         }
     }
+    return result
 }
 
 @Preview(showBackground = true)

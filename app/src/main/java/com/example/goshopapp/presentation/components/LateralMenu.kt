@@ -32,11 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.goshopapp.data.FirebaseAuth
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 import com.example.goshopapp.presentation.navigation.LateralScreens.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LateralMenu(
@@ -48,15 +49,15 @@ fun LateralMenu(
     val authManager = FirebaseAuth()
     var isUserAuthenticated by remember { mutableStateOf(false) }
 
-        scope.launch {
-            while (true) {
-                // Verifica el estado de autenticación y actualiza la variable
-                isUserAuthenticated = authManager.getCurrentUserId() != null
+    scope.launch {
+        while (true) {
+            // Verifica el estado de autenticación y actualiza la variable
+            isUserAuthenticated = authManager.getCurrentUserId() != null
 
-                // Espera un intervalo antes de realizar la siguiente verificación
-                delay(1000) // por ejemplo, verifica cada 5 segundos
-            }
+            // Espera un intervalo antes de realizar la siguiente verificación
+            delay(1000) // por ejemplo, verifica cada 5 segundos
         }
+    }
 
     val menu_items = listOf(
         ListsScreen,
@@ -130,20 +131,38 @@ fun LateralMenu(
                     Spacer(modifier = Modifier.height(75.dp))
 
                     menu_items.forEach {item->
-                        Text(
-                            text = item.title,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .clickable(onClick = {
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                    navController.navigate(item.route)
-                                })
-                        )
+                        // SI EL ITEM ES FAVORITOS, SE CAMBIA EL CLICKABLE
+                        if (item.route == "favourites_screen") {
+                            Text(
+                                text = item.title,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .clickable(onClick = {
+                                        scope.launch {
+                                            drawerState.close()
+                                        }
+                                        navController.navigate(LateralScreens.FavouritesScreen.route)
+                                    })
+                            )
+                        } else {
+                            Text(
+                                text = item.title,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .clickable(onClick = {
+                                        scope.launch {
+                                            drawerState.close()
+                                        }
+                                        navController.navigate(item.route)
+                                    })
+                            )
+                        }
                     }
                 }
             }

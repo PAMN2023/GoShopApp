@@ -7,4 +7,6 @@ class ListDetailsViewModel : ViewModel() {
     val items = mutableListOf<Product>()
     var listName = ""
     var isShared = false
+    var listImg = ""
+    var aproxPrice = ""
 }
