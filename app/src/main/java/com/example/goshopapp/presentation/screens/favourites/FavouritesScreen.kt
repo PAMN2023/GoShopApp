@@ -153,13 +153,13 @@ fun FavouritesScreen(navController: NavHostController) {
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
                             )
-                            Spacer(modifier = Modifier.height(5.dp))
+                            /*Spacer(modifier = Modifier.height(5.dp))
                             Text(
                                 text = "Cantidad: 1",
                                 color = Color(0XFF007562),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
-                            )
+                            )*/
                             Spacer(modifier = Modifier.height(5.dp))
                             Text(
                                 text = "Precio aproximado: " + round(product.price.toDouble()).toInt() + "€",
