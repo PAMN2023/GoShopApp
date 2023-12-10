@@ -42,6 +42,7 @@ import coil.compose.AsyncImage
 import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.navigation.AppScreens
+import com.example.goshopapp.presentation.navigation.LateralScreens
 import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
 import java.net.URLEncoder
@@ -232,6 +233,10 @@ fun ListDetailsScreen(navController: NavHostController, listDetailsViewModel: Li
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 isDeletePopupVisible = DeleteObjectScreen(true, Lists(listDetailsViewModel.listName, listDetailsViewModel.isShared, listDetailsViewModel.aproxPrice, listDetailsViewModel.listImg, items), deleteItem)
+                if (!isDeletePopupVisible) {
+                    Thread.sleep(200)
+                    navController.navigate(LateralScreens.ListsScreen.route)
+                }
             }
         }
     }

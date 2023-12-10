@@ -46,6 +46,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
+import com.example.goshopapp.domain.model.Product
 import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.navigation.LateralScreens
 import com.example.goshopapp.presentation.screens.actionpopups.CreateListScreen
@@ -60,6 +61,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
     var userLists by remember { mutableStateOf<MutableList<Lists>?>(null) }
     var isCreatePopupVisible by remember { mutableStateOf(false) }
     var userList by remember { mutableStateOf<Lists?>(null) }
+    var deleteList by remember {mutableStateOf<Lists?>(null)}
     fun toggleCreatePopupVisibility() {
         isCreatePopupVisible = !isCreatePopupVisible
     }
@@ -196,7 +198,10 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                         modifier = Modifier
                                             .padding(bottom = 8.dp)
                                             .size(35.dp, 35.dp)
-                                            .clickable { toggleDeletePopupVisibility() }
+                                            .clickable {
+                                                toggleDeletePopupVisibility()
+                                                deleteList = list
+                                            }
                                     )
                                 }
                             } else {
@@ -212,7 +217,10 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                                         contentDescription = "Delete Product Icon",
                                         modifier = Modifier
                                             .size(35.dp, 35.dp)
-                                            .clickable { toggleDeletePopupVisibility() }
+                                            .clickable {
+                                                toggleDeletePopupVisibility()
+                                                deleteList = list
+                                            }
                                     )
                                 }
                             }
@@ -267,7 +275,7 @@ fun UserListsScreen(navController: NavHostController, listDetailsViewModel: List
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                isDeletePopupVisible = DeleteObjectScreen(false, userList!!)
+                isDeletePopupVisible = DeleteObjectScreen(false, deleteList!!)
                 if (!isDeletePopupVisible) {
                     navController.navigate(LateralScreens.ListsScreen.route)
                 }
