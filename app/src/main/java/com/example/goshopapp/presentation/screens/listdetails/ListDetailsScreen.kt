@@ -1,8 +1,6 @@
 package com.example.goshopapp.presentation.screens.listdetails
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +23,6 @@ import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,15 +37,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.goshopapp.domain.model.Lists
 import com.example.goshopapp.domain.model.Product
+import com.example.goshopapp.presentation.navigation.AppScreens
 import com.example.goshopapp.presentation.screens.actionpopups.DeleteObjectScreen
 import com.example.goshopapp.presentation.viewmodel.ListDetailsViewModel
+import java.net.URLEncoder
 import kotlin.math.round
 
 @Composable
-fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
+fun ListDetailsScreen(navController: NavHostController, listDetailsViewModel: ListDetailsViewModel) {
 
     val items = listDetailsViewModel.items
     var isDeletePopupVisible by remember { mutableStateOf(false) }
@@ -115,7 +115,17 @@ fun ListDetailsScreen(listDetailsViewModel: ListDetailsViewModel) {
                         .padding(16.dp)
                         .shadow(4.dp, shape = RoundedCornerShape(8.dp))
                         .background(Color.White)
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable {
+                            val encodedImageURL = URLEncoder.encode(product.image, "UTF-8")
+                            navController.navigate(
+                                AppScreens.ProductDetailsScreen.route
+                                        + "/${product.name}"
+                                        + "/$encodedImageURL"
+                                        + "/${product.description}"
+                                        + "/${product.information}"
+                                        + "/${product.price}")
+                        },
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
